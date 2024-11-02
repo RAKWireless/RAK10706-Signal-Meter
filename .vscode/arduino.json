@@ -1,0 +1,16 @@
+{
+    "configuration": "softdevice=s140v6,debug=l0,supportnfc=1,supportat=1,supportlora=1,supportAS923=1,supportAU915=1,supportCN470=2,supportCN779=1,supportEU433=2,supportEU868=1,supportKR920=1,supportIN865=1,supportUS915=1,supportRU864=1,supportLA915=1",
+    "postbuild": "python rename.py",
+    "buildPreferences": [
+        [
+            "compiler.cpp.extra_flags",
+            "-DMY_DEBUG=0 -DSW_VERSION_0=2 -DSW_VERSION_1=0 -DSW_VERSION_2=5"
+        ]
+    ],
+    "version": "2.0.5",
+    "project": "RAK10706-Signal-Meter-SD",
+    "board": "rak_rui:nrf52:WisCoreRAK4631Board",
+    "port": "COM22",
+    "sketch": "RUI3-Signal-Meter-P2P-LPWAN-SD.ino",
+    "output": "build"
+}
