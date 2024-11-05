@@ -166,19 +166,32 @@ void dump_all_sd_files(void)
 		if (SD.exists((const char *)file_name))
 		{
 			// MYLOG("SD", "Content of %s:", file_name);
-			Serial.println("=====================================================");
-			Serial.printf("%s\r\n", file_name);
+			// Serial.println("=====================================================");
 			log_file = SD.open((const char *)file_name, FILE_READ); // re-open the file for reading.
 			if (log_file)
 			{
+				Serial.printf("%s\r\n", file_name);
+				Serial.write(0x02);
+				Serial.flush();
+				// Delay to give receiver time to get filename
+				delay(100);
+
 				while (log_file.available())
 				{
 					Serial.write(log_file.read()); // read from the file until there's nothing else in it.
 					delay(5);
 				}
 				log_file.close(); // close the file.
-				Serial.println("=====================================================");
 				Serial.flush();
+
+				// Delay to give receiver time to get EOF marker
+				delay(100);
+
+				Serial.write(0x03);
+				Serial.flush();
+
+				// Delay to give receiver time to get EOF marker
+				delay(100);
 			}
 			else
 			{
@@ -191,6 +204,8 @@ void dump_all_sd_files(void)
 		}
 		else
 		{
+			Serial.write(0x17);
+			Serial.flush();
 			break;
 		}
 	}

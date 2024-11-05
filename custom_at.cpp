@@ -657,7 +657,7 @@ int app_ver_handler(SERIAL_PORT port, char *cmd, stParam *param)
 {
 	if (param->argc == 1 && !strcmp(param->argv[0], "?"))
 	{
-		AT_PRINTF("%s=RUI3_Tester_V%d.%d.%d", cmd, SW_VERSION_0, SW_VERSION_1, SW_VERSION_2);
+		AT_PRINTF("%s=Signal Meter V%d.%d.%d", cmd, SW_VERSION_0, SW_VERSION_1, SW_VERSION_2);
 		return AT_OK;
 	}
 	return AT_ERROR;

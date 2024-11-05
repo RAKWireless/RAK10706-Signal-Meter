@@ -1336,7 +1336,7 @@ void setup(void)
 	delay(5000);
 #endif
 
-	sprintf(line_str, "RUI3_Tester_V%d.%d.%d", SW_VERSION_0, SW_VERSION_1, SW_VERSION_2);
+	sprintf(line_str, "Signal Meter V%d.%d.%d", SW_VERSION_0, SW_VERSION_1, SW_VERSION_2);
 	api.system.firmwareVersion.set(line_str);
 
 	digitalWrite(LED_GREEN, HIGH);
