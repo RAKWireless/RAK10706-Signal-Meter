@@ -1138,7 +1138,7 @@ void recv_cb_lpw(SERVICE_LORA_RECEIVE_T *data)
 	}
 	if ((g_custom_parameters.test_mode == MODE_FIELDTESTER) || (g_custom_parameters.test_mode == MODE_FIELDTESTER_V2))
 	{
-		if (data->Port == 2)
+		if ((data->Port == 2) || (data->Port == 3))
 		{
 			display_reason = 6;
 			memcpy(field_tester_pckg, data->Buffer, data->BufferSize);
@@ -1453,6 +1453,9 @@ void setup(void)
 	{
 		oled_add_line((char *)"SD Card OK");
 	}
+
+	// Initialize AT command for available modules
+	init_config_modules_at();
 
 	// Setup callbacks and timers depending on test mode
 	switch (g_custom_parameters.test_mode)

@@ -56,7 +56,7 @@
 #ifndef SW_VERSION_0
 #define SW_VERSION_0 2
 #define SW_VERSION_1 0
-#define SW_VERSION_2 5
+#define SW_VERSION_2 7
 #endif
 /** Custom flash parameters structure */
 struct custom_param_s
@@ -95,6 +95,7 @@ bool init_dump_logs_at(void);
 bool init_rtc_at(void);
 bool init_app_ver_at(void);
 bool init_product_info_at(void);
+bool init_config_modules_at(void);
 bool get_at_setting(void);
 bool save_at_setting(void);
 void set_linkcheck(void);

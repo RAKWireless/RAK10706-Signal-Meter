@@ -832,6 +832,24 @@ void handle_button(void)
 					}
 				}
 			}
+			else
+			{
+				if (!tx_active)
+				{
+					if (!display_power)
+					{
+						oled_power(true);
+					}
+					MYLOG("BTN", "Manual send triggered");
+					api.system.timer.stop(RAK_TIMER_0);
+					forced_tx = true;
+					send_packet(NULL);
+					if (g_custom_parameters.send_interval != 0)
+					{
+						api.system.timer.start(RAK_TIMER_0, g_custom_parameters.send_interval, NULL);
+					}
+				}
+			}
 		}
 		break;
 	}

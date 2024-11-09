@@ -54,6 +54,9 @@ int dump_logs_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int rtc_command_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int app_ver_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int product_info_handler(SERIAL_PORT port, char *cmd, stParam *param);
+int avail_modules_handler(SERIAL_PORT port, char *cmd, stParam *param);
+int location_handler(SERIAL_PORT port, char *cmd, stParam *param);
+
 /**
  * @brief Add send interval AT command
  *
@@ -418,7 +421,7 @@ int rtc_command_handler(SERIAL_PORT port, char *cmd, stParam *param)
 		read_rak12002();
 		Serial.print(cmd);
 		Serial.print("=");
-		Serial.printf("%d.%02d.%02d %d:%02d:%02d\n", g_date_time.year, g_date_time.month,
+		Serial.printf("%d:%d:%d:%d:%d:%d\n", g_date_time.year, g_date_time.month,
 					  g_date_time.date, g_date_time.hour,
 					  g_date_time.minute, g_date_time.second);
 	}
@@ -502,6 +505,64 @@ int rtc_command_handler(SERIAL_PORT port, char *cmd, stParam *param)
 	}
 
 	return AT_OK;
+}
+
+/**
+ * @brief Get available modules
+ *
+ * @return true if success
+ * @return false if failed
+ */
+bool init_config_modules_at(void)
+{
+	return api.system.atMode.add((char *)"MODS",
+								 (char *)"Get info about available modules, enable location tracking. Format: <location on/off>:<has SD>:<has RTC>",
+								 (char *)"MODS", avail_modules_handler,
+								 RAK_ATCMD_PERM_WRITE | RAK_ATCMD_PERM_READ);
+}
+
+/**
+ * @brief Handler for get available modules AT command
+ *
+ * @param port Serial port used
+ * @param cmd char array with the received AT command
+ * @param param char array with the received AT command parameters
+ * @return int result of command parsing
+ * 			AT_OK AT command & parameters valid
+ * 			AT_PARAM_ERROR command or parameters invalid
+ */
+int avail_modules_handler(SERIAL_PORT port, char *cmd, stParam *param)
+{
+	if (param->argc == 1 && !strcmp(param->argv[0], "?"))
+	{
+		AT_PRINTF("%s=%d:%d:%d", cmd, g_custom_parameters.location_on ? 1 : 0, has_rtc ? 1 : 0, has_sd ? 1 : 0);
+		return AT_OK;
+	}
+	else if (param->argc >= 1)
+	{
+		uint8_t value = strtoul(param->argv[0], NULL, 0);
+		// MYLOG("ATC","Location mode settings %d", value);
+		if (value == 0)
+		{
+			if (g_custom_parameters.location_on)
+			{
+				g_custom_parameters.location_on = false;
+				save_at_setting();
+			}
+			return AT_OK;
+		}
+		else if (value == 1)
+		{
+			if (!g_custom_parameters.location_on)
+			{
+				g_custom_parameters.location_on = true;
+				save_at_setting();
+			}
+			return AT_OK;
+			return AT_OK;
+		}
+	}
+	return AT_PARAM_ERROR;
 }
 
 /**
@@ -688,7 +749,7 @@ int product_info_handler(SERIAL_PORT port, char *cmd, stParam *param)
 	/* Add when device is available in WisToolBox                    */
 	/*****************************************************************/
 
-	// Return 
+	// Return
 	uint8_t key_eui[16] = {0};
 	if (param->argc == 1 && !strcmp(param->argv[0], "?"))
 	{
