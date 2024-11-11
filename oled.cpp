@@ -505,3 +505,25 @@ void display_show_menu(char *menu[], uint8_t menu_len, uint8_t sel_menu, uint8_t
 	}
 	oled_display();
 }
+
+void prepare_oled_header(void)
+{
+	/** Update header and battery value */
+	if (has_oled && !g_settings_ui)
+	{
+		oled_clear();
+		if (g_custom_parameters.test_mode == MODE_FIELDTESTER)
+		{
+			sprintf(line_str, "RAK FieldTester");
+		}
+		else if (g_custom_parameters.test_mode == MODE_FIELDTESTER_V2)
+		{
+			sprintf(line_str, "RAK FieldTest V2");
+		}
+		else
+		{
+			sprintf(line_str, "RAK Signal Meter");
+		}
+		oled_write_header(line_str);
+	}
+}

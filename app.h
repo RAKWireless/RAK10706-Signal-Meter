@@ -129,6 +129,7 @@ void oled_display(void);
 void oled_power(bool on_off);
 void display_show_menu(char *menu[], uint8_t menu_len, uint8_t sel_menu, uint8_t sel_item, bool display_saver = false, bool location_on = false);
 void oled_saver(void *);
+void prepare_oled_header(void);
 extern custom_param_s g_last_settings;
 extern char line_str[];
 extern char *g_regions_list[];
