@@ -2,3 +2,4 @@
 .vscode/settings.json
 build
 flash.bat
+generated/*+BL+SD.hex
