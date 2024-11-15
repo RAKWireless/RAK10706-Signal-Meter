@@ -56,7 +56,7 @@
 #ifndef SW_VERSION_0
 #define SW_VERSION_0 2
 #define SW_VERSION_1 0
-#define SW_VERSION_2 7
+#define SW_VERSION_2 8
 #endif
 /** Custom flash parameters structure */
 struct custom_param_s
@@ -245,7 +245,7 @@ void dump_all_sd_files(void);
 void dump_sd_file(const char *path);
 void clear_sd_file(void);
 extern volatile result_s result;
-extern volatile char file_name[];
+extern volatile char file_name[32];
 extern bool has_sd;
 extern volatile bool sd_card_error;
 

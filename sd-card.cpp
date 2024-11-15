@@ -170,12 +170,18 @@ void dump_all_sd_files(void)
 			log_file = SD.open((const char *)file_name, FILE_READ); // re-open the file for reading.
 			if (log_file)
 			{
+				oled_clear();
+				oled_write_header("LOGGING", false);
+				oled_add_line((char *)"Dumping SD card");
+				oled_add_line((char *)"Do not power off");
+				sprintf(line_str, "%s", file_name);
+				oled_write_line(3, 0, line_str);
+				oled_display();
 				Serial.printf("%s\r\n", file_name);
 				Serial.write(0x02);
 				Serial.flush();
 				// Delay to give receiver time to get filename
-				delay(100);
-
+				delay(500);
 				while (log_file.available())
 				{
 					Serial.write(log_file.read()); // read from the file until there's nothing else in it.
@@ -184,14 +190,14 @@ void dump_all_sd_files(void)
 				log_file.close(); // close the file.
 				Serial.flush();
 
-				// Delay to give receiver time to get EOF marker
-				delay(100);
+				// Delay to give receiver time to get last bytes of file
+				delay(500);
 
 				Serial.write(0x03);
 				Serial.flush();
 
 				// Delay to give receiver time to get EOF marker
-				delay(100);
+				delay(500);
 			}
 			else
 			{

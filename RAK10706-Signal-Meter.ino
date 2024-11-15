@@ -73,7 +73,7 @@ bool has_file = false;
 bool has_gnss = false;
 
 /** Name of current log file */
-char volatile file_name[] = "0000-log.csv";
+volatile char file_name[32] = "0000-log.csv";
 
 /** Structure for result data */
 volatile result_s result;

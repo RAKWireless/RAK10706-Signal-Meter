@@ -329,7 +329,7 @@ int dump_logs_handler(SERIAL_PORT port, char *cmd, stParam *param)
 		api.system.timer.stop(RAK_TIMER_1);
 		api.system.timer.stop(RAK_TIMER_2);
 		oled_clear();
-		oled_write_header("REBOOT", false);
+		oled_write_header("LOGGING", false);
 		oled_add_line((char *)"Dumping SD card");
 		oled_add_line((char *)"Do not power off");
 		oled_display();
@@ -346,6 +346,9 @@ int dump_logs_handler(SERIAL_PORT port, char *cmd, stParam *param)
 		}
 		dump_all_sd_files();
 		AT_PRINTF("\r\n");
+		oled_clear();
+		oled_write_header("REBOOT", false);
+		oled_display();
 		// reboot
 		api.system.reboot();
 	}
