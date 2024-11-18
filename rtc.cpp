@@ -2,10 +2,10 @@
  * @file rtc.cpp
  * @author Bernd Giesecke (bernd.giesecke@rakwireless.com)
  * @brief Initialization and usage of RAK12002 RTC module
- * @version 0.1
- * @date 2022-02-18
+ * @version 0.2
+ * @date 2024-11-18
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2024
  *
  */
 #include "app.h"
@@ -14,8 +14,10 @@
 /** Instance of the RTC class */
 Melopero_RV3028 rtc;
 
-date_time_s g_date_time;
+/** Structure to hold date and time */
+volatile date_time_s g_date_time;
 
+/** Flag if RTC was found */
 bool has_rtc = false;
 
 /**
@@ -139,7 +141,7 @@ void get_mcu_time(void)
 	struct tm localtime;
 	SysTime_t UnixEpoch = SysTimeGet();
 	UnixEpoch.Seconds -= 18;		  /*removing leap seconds*/
-	UnixEpoch.Seconds += 8 * 60 * 60; // Make it GMT+8
+	UnixEpoch.Seconds += (int32_t)(g_custom_parameters.timezone * 60 * 60); // Make it GMT+8
 	SysTimeLocalTime(UnixEpoch.Seconds, &localtime);
 	sprintf(local_time, "%02dh%02dm%02ds on %02d/%02d/%04d", localtime.tm_hour, localtime.tm_min, localtime.tm_sec,
 			localtime.tm_mon + 1, localtime.tm_mday, localtime.tm_year + 1900);

@@ -2,10 +2,10 @@
  * @file custom_at.cpp
  * @author Bernd Giesecke (bernd@giesecke.tk)
  * @brief Custom AT commands for the application
- * @version 0.1
- * @date 2023-12-29
+ * @version 0.2
+ * @date 2024-11-18
  *
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2024
  *
  */
 #include "app.h"
@@ -45,6 +45,9 @@ volatile bool ready_to_dump = true;
 /** Flag if ATC+PRD_INFO was used */
 bool prd_info_requested = false;
 
+/** Flag if SignalMeter tool is connected */
+bool g_settings_active = false;
+
 // Forward declarations
 int interval_send_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int status_handler(SERIAL_PORT port, char *cmd, stParam *param);
@@ -52,10 +55,11 @@ int test_mode_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int custom_pckg_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int dump_logs_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int rtc_command_handler(SERIAL_PORT port, char *cmd, stParam *param);
+int timezone_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int app_ver_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int product_info_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int avail_modules_handler(SERIAL_PORT port, char *cmd, stParam *param);
-int location_handler(SERIAL_PORT port, char *cmd, stParam *param);
+int settings_handler(SERIAL_PORT port, char *cmd, stParam *param);
 
 /**
  * @brief Add send interval AT command
@@ -510,6 +514,76 @@ int rtc_command_handler(SERIAL_PORT port, char *cmd, stParam *param)
 	return AT_OK;
 }
 
+bool init_timezone_at(void)
+{
+	return api.system.atMode.add((char *)"TZ",
+								 (char *)"Set/Get the timezone. Format: +14 to - 11",
+								 (char *)"TZ", timezone_handler,
+								 RAK_ATCMD_PERM_WRITE | RAK_ATCMD_PERM_READ);
+}
+
+int timezone_handler(SERIAL_PORT port, char *cmd, stParam *param)
+{
+	// MYLOG("AT_CMD", "Param size %d", param->argc);
+	if (param->argc == 1 && !strcmp(param->argv[0], "?"))
+	{
+		AT_PRINTF("%s=%d", cmd, g_custom_parameters.timezone);
+	}
+	else if (param->argc == 1)
+	{
+		int8_t new_timezone = (int8_t)strtol(param->argv[0], NULL, 0);
+		MYLOG("AT_CMD", "Got timezone %d", new_timezone);
+		if ((new_timezone < -11) || (new_timezone > 14))
+		{
+			return AT_PARAM_ERROR;
+		}
+
+		if (new_timezone != g_custom_parameters.timezone)
+		{
+			// // Adjust RTC time
+			// if (has_rtc)
+			// {
+			// 	read_rak12002;
+			// 	MYLOG("ATC", "Old time: %d %d %d %d:%d:%d\n", g_date_time.year, g_date_time.month,
+			// 		  g_date_time.date, g_date_time.hour,
+			// 		  g_date_time.minute, g_date_time.second);
+			// 	struct tm localtime;
+			// 	volatile SysTime_t UnixEpoch = SysTimeGet();
+			// 	UnixEpoch.Seconds -= 18;												/*removing leap seconds*/
+			// 	MYLOG("ATC", "UnixEpoch.Seconds: %ld\n", UnixEpoch.Seconds);
+			// 	UnixEpoch.Seconds -= (int32_t)(g_custom_parameters.timezone * 60 * 60); // Make it GMT+8
+			// 	MYLOG("ATC", "UnixEpoch.Seconds: %ld\n", UnixEpoch.Seconds);
+			// 	UnixEpoch.Seconds += (int32_t)(new_timezone * 60 * 60); // Make it GMT+8
+			// 	MYLOG("ATC", "UnixEpoch.Seconds: %ld\n", UnixEpoch.Seconds);
+			// 	SysTimeLocalTime(UnixEpoch.Seconds, &localtime);
+
+			// 	g_date_time.year = localtime.tm_year + 1900;
+			// 	g_date_time.month = localtime.tm_mon + 1;
+			// 	g_date_time.date = localtime.tm_mday;
+			// 	g_date_time.hour = localtime.tm_hour;
+			// 	g_date_time.minute = localtime.tm_min;
+			// 	g_date_time.second = localtime.tm_sec;
+
+			// 	set_rak12002(g_date_time.year, g_date_time.month, g_date_time.date, g_date_time.hour, g_date_time.minute, g_date_time.second);
+			// 	read_rak12002();
+			// 	MYLOG("ATC", "New time: %d %d %d %d:%d:%d\n", g_date_time.year, g_date_time.month,
+			// 		  g_date_time.date, g_date_time.hour,
+			// 		  g_date_time.minute, g_date_time.second);
+			// }
+			g_custom_parameters.timezone = new_timezone;
+			save_at_setting();
+			// Request new time sync on next send
+			sync_time_status = 0;
+		}
+		return AT_OK;
+	}
+	else
+	{
+		return AT_PARAM_ERROR;
+	}
+	return AT_OK;
+}
+
 /**
  * @brief Get available modules
  *
@@ -562,6 +636,76 @@ int avail_modules_handler(SERIAL_PORT port, char *cmd, stParam *param)
 				save_at_setting();
 			}
 			return AT_OK;
+			return AT_OK;
+		}
+	}
+	return AT_PARAM_ERROR;
+}
+
+/**
+ * @brief Enable/Disable setup mode.
+ * 		While setup mode is active, testing is temporary stopped to avoid collisions in the serial communication
+ *
+ * @return int result of command parsing
+ * 			AT_OK AT command & parameters valid
+ * 			AT_PARAM_ERROR command or parameters invalid
+ */
+bool init_settings_at(void)
+{
+	return api.system.atMode.add((char *)"SETT",
+								 (char *)"Enable/Disable setup mode, stops testing, 0 = disable, 1 = enable",
+								 (char *)"SETT", settings_handler,
+								 RAK_ATCMD_PERM_WRITE | RAK_ATCMD_PERM_READ);
+}
+
+/**
+ * @brief Handler for get available modules AT command
+ *
+ * @param port Serial port used
+ * @param cmd char array with the received AT command
+ * @param param char array with the received AT command parameters
+ * @return int result of command parsing
+ * 			AT_OK AT command & parameters valid
+ * 			AT_PARAM_ERROR command or parameters invalid
+ */
+int settings_handler(SERIAL_PORT port, char *cmd, stParam *param)
+{
+	if (param->argc == 1 && !strcmp(param->argv[0], "?"))
+	{
+		AT_PRINTF("%s=%s", cmd, g_settings_active ? "Active" : "Inactive");
+		return AT_OK;
+	}
+	else if (param->argc >= 1)
+	{
+		uint8_t value = strtoul(param->argv[0], NULL, 0);
+		// MYLOG("ATC","Location mode settings %d", value);
+		if (value == 0)
+		{
+			g_settings_active = false;
+			// Stop the timer
+			api.system.timer.stop(RAK_TIMER_0);
+			if (g_custom_parameters.send_interval != 0)
+			{
+				// Restart the timer
+				api.system.timer.start(RAK_TIMER_0, g_custom_parameters.send_interval, NULL);
+			}
+
+			if (g_custom_parameters.test_mode == MODE_P2P)
+			{
+				api.lora.precv(65533);
+			}
+			return AT_OK;
+		}
+		else if (value == 1)
+		{
+			g_settings_active = true;
+			// Stop the timer
+			api.system.timer.stop(RAK_TIMER_0);
+
+			if (g_custom_parameters.test_mode == MODE_P2P)
+			{
+				api.lora.precv(0);
+			}
 			return AT_OK;
 		}
 	}
@@ -827,6 +971,7 @@ bool get_at_setting(void)
 		g_custom_parameters.custom_packet[2] = 0x03;
 		g_custom_parameters.custom_packet[3] = 0x04;
 		g_custom_parameters.custom_packet_len = 4;
+		g_custom_parameters.timezone = 8;
 		save_at_setting();
 		return false;
 	}
@@ -876,6 +1021,17 @@ bool get_at_setting(void)
 	{
 		g_custom_parameters.custom_packet_len = temp_params.custom_packet_len;
 		memcpy(g_custom_parameters.custom_packet, temp_params.custom_packet, g_custom_parameters.custom_packet_len);
+	}
+
+	if ((temp_params.timezone > 14) || (temp_params.timezone < -12))
+	{
+		MYLOG("AT_CMD", "Invalid timezone found %d", temp_params.timezone);
+		g_custom_parameters.timezone = 8;
+		found_problem = true;
+	}
+	else
+	{
+		g_custom_parameters.timezone = temp_params.timezone;
 	}
 
 	if (found_problem)

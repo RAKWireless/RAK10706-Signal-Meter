@@ -2,8 +2,8 @@
  * @file acc.cpp
  * @author Bernd Giesecke (bernd@giesecke.tk)
  * @brief Lis3DH acc sensor functions
- * @version 0.1
- * @date 2024-06-24
+ * @version 0.2
+ * @date 2024-11-18
  *
  * @copyright Copyright (c) 2024
  *

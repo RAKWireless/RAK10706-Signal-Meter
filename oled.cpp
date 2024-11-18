@@ -1,16 +1,17 @@
 /**
- * @file RAK1921_oled.cpp
+ * @file oled.cpp
  * @author Bernd Giesecke (bernd.giesecke@rakwireless.com)
  * @brief Initialization and usage of RAK1921 OLED
- * @version 0.1
- * @date 2022-02-18
+ * @version 0.2
+ * @date 2024-11-18
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2024
  *
  */
 #include "app.h"
 #include <nRF_SSD1306Wire.h>
 
+// Forward declaration
 void oled_show(void);
 
 /** Width of the display in pixel */
@@ -290,26 +291,28 @@ void display_show_menu(char *menu[], uint8_t menu_len, uint8_t sel_menu, uint8_t
 	if (sel_menu == T_INFO_MENU)
 	{
 		oled_write_line(0, 0, (char *)"(1) Back");
+		sprintf(line_str, "Ver: Signal Meter V%d.%d.%d", SW_VERSION_0, SW_VERSION_1, SW_VERSION_2);
+		oled_write_line(1, 0, line_str);
 		switch (g_last_settings.test_mode)
 		{
 		case MODE_LINKCHECK:
-			oled_write_line(1, 0, (char *)"LinkCheck Mode");
+			oled_write_line(2, 0, (char *)"Mode: LinkCheck");
 			break;
 		case MODE_P2P:
-			oled_write_line(1, 0, (char *)"P2P Mode");
+			oled_write_line(2, 0, (char *)"Mode: P2P");
 			break;
 		case MODE_FIELDTESTER:
-			oled_write_line(1, 0, (char *)"FieldTester mode");
+			oled_write_line(2, 0, (char *)"Mode: FieldTester");
 			break;
 		case MODE_FIELDTESTER_V2:
-			oled_write_line(1, 0, (char *)"FieldTester V2 mode");
+			oled_write_line(2, 0, (char *)"Mode: FieldTester V2");
 			break;
 		}
-		sprintf(line_str, "Sent interval %ds", g_last_settings.send_interval / 1000);
-		oled_write_line(2, 0, line_str);
-		sprintf(line_str, "Location %s", location_on ? "on" : "off");
+		sprintf(line_str, "Send %ds", g_last_settings.send_interval / 1000);
 		oled_write_line(3, 0, line_str);
-		sprintf(line_str, "Display saver %s", display_saver ? "on" : "off");
+		sprintf(line_str, "Screen %s", display_saver ? "on" : "off");
+		oled_write_line(3, 64, line_str);
+		sprintf(line_str, "Location %s", location_on ? "on" : "off");
 		oled_write_line(4, 0, line_str);
 	}
 	// Handle send interval menu
@@ -506,6 +509,10 @@ void display_show_menu(char *menu[], uint8_t menu_len, uint8_t sel_menu, uint8_t
 	oled_display();
 }
 
+/**
+ * @brief Prepare the Header line of the OLED
+ * 
+ */
 void prepare_oled_header(void)
 {
 	/** Update header and battery value */
@@ -520,7 +527,7 @@ void prepare_oled_header(void)
 		{
 			sprintf(line_str, "RAK FieldTest V2");
 		}
-		else
+		else // LinkCheck or P2P mode
 		{
 			sprintf(line_str, "RAK Signal Meter");
 		}

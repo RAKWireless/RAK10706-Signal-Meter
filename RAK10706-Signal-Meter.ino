@@ -1,11 +1,11 @@
 /**
- * @file RUI3-Signal-Meter-P2P-LPWAN.ino
+ * @file RAK10706-Signal-Meter.ino
  * @author Bernd Giesecke (bernd@giesecke.tk)
  * @brief Simple signal meter for LoRa P2P and LoRaWAN
- * @version 0.1
- * @date 2023-11-23
+ * @version 0.2
+ * @date 2024-11-18
  *
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2024
  *
  */
 #include "app.h"
@@ -73,7 +73,7 @@ bool has_file = false;
 bool has_gnss = false;
 
 /** Name of current log file */
-volatile char file_name[32] = "0000-log.csv";
+char volatile file_name[] = "0000-log.csv";
 
 /** Structure for result data */
 volatile result_s result;
@@ -117,16 +117,6 @@ void send_packet(void *data)
 				// Check if we already have a sufficient location fix
 				if (poll_gnss())
 				{
-					// if (has_oled && !g_settings_ui)
-					// {
-					// oled_clear();
-					// oled_add_line((char *)"Got Location Fix");
-					// sprintf(line_str, "La %.4f Lo %.4f", g_last_lat / 10000000.0, g_last_long / 10000000.0);
-					// oled_add_line(line_str);
-					// sprintf(line_str, "HDOP %.2f Sat: %d", g_last_accuracy / 100.0, g_last_satellites);
-					// oled_add_line(line_str);
-					// }
-
 					// Get gateway time
 					if (sync_time_status == 0)
 					{
@@ -315,27 +305,6 @@ void send_packet(void *data)
 					oled_add_line((char *)"Start sending");
 				}
 
-				// // Check DR ==> Not good to change DR automatically!!!
-				// uint8_t new_dr = get_min_dr(api.lorawan.band.get(), g_custom_parameters.custom_packet_len);
-				// MYLOG("UPLINK", "Get DR for packet len %d returned %d, current is %d", g_custom_parameters.custom_packet_len, new_dr, api.lorawan.dr.get());
-				// if (new_dr <= api.lorawan.dr.get())
-				// {
-				// 	MYLOG("UPLINK", "Possible Datarate is ok or smaller than current");
-				// }
-				// else
-				// {
-				// 	api.lorawan.dr.set(new_dr);
-				// 	delay(500);
-				// 	MYLOG("UPLINK", "Datarate changed to %d", api.lorawan.dr.get());
-				// 	if (has_oled && !g_settings_ui)
-				// 	{
-				// 		oled_add_line((char *)"Packet too large!");
-				// 		sprintf(line_str, "New DR%d", new_dr);
-				// 		oled_add_line(line_str);
-				// 	}
-				// 	MYLOG("UPLINK", "Datarate changed to %d", api.lorawan.dr.get());
-				// }
-
 				// Get gateway time
 				if (sync_time_status == 0)
 				{
@@ -400,7 +369,7 @@ void send_packet(void *data)
 			oled_add_line((char *)"Start sending");
 
 			// Always send with CAD
-			api.lora.psend(g_custom_parameters.custom_packet_len, g_custom_parameters.custom_packet, true);
+			api.lora.psend(g_custom_parameters.custom_packet_len, g_custom_parameters.custom_packet, false); //, true);
 			tx_active = true;
 			// Increase sent packet number
 			packet_num++;
@@ -422,6 +391,37 @@ void send_packet(void *data)
  */
 void handle_display(void *reason)
 {
+	// Update date and time if synced with LNS
+	if (sync_time_status == 1)
+	{
+		sync_time_status = 2;
+
+		struct tm localtime;
+		SysTime_t UnixEpoch = SysTimeGet();
+		UnixEpoch.Seconds -= 18;												/*removing leap seconds*/
+		UnixEpoch.Seconds += (int32_t)(g_custom_parameters.timezone * 60 * 60); // Make it GMT+8
+		SysTimeLocalTime(UnixEpoch.Seconds, &localtime);
+		MYLOG("APP", "LNS Time %d %d %d %d:%d:%d\n", localtime.tm_year + 1900, localtime.tm_mon + 1,
+			  localtime.tm_mday, localtime.tm_hour,
+			  localtime.tm_min, localtime.tm_sec);
+
+		g_date_time.year = localtime.tm_year + 1900;
+		g_date_time.month = localtime.tm_mon + 1;
+		g_date_time.date = localtime.tm_mday;
+		g_date_time.hour = localtime.tm_hour;
+		g_date_time.minute = localtime.tm_min;
+		g_date_time.second = localtime.tm_sec;
+		if (has_rtc)
+		{
+			MYLOG("APP", "Sync RTC with LoRaWAN");
+			set_rak12002(g_date_time.year, g_date_time.month, g_date_time.date, g_date_time.hour, g_date_time.minute, g_date_time.second);
+			read_rak12002();
+			MYLOG("APP", "After sync: %d %d %d %d:%d:%d\n", g_date_time.year, g_date_time.month,
+				  g_date_time.date, g_date_time.hour,
+				  g_date_time.minute, g_date_time.second);
+		}
+	}
+
 	digitalWrite(LED_BLUE, LOW);
 	digitalWrite(LED_GREEN, LOW);
 	// Get the wakeup reason
@@ -433,24 +433,6 @@ void handle_display(void *reason)
 		MYLOG("APP", "Bug in code!");
 		return;
 	}
-	// /** Update header and battery value */
-	// if (has_oled && !g_settings_ui)
-	// {
-	// 	oled_clear();
-	// 	if (g_custom_parameters.test_mode == MODE_FIELDTESTER)
-	// 	{
-	// 		sprintf(line_str, "RAK FieldTester");
-	// 	}
-	// 	else if (g_custom_parameters.test_mode == MODE_FIELDTESTER_V2)
-	// 	{
-	// 		sprintf(line_str, "RAK FieldTest V2");
-	// 	}
-	// 	else
-	// 	{
-	// 		sprintf(line_str, "RAK Signal Meter");
-	// 	}
-	// 	oled_write_header(line_str);
-	// }
 
 	switch (disp_reason[0])
 	{
@@ -1205,11 +1187,24 @@ void handle_display(void *reason)
 		tx_active = false;
 		break;
 	default: // Invalid
+		if (has_oled && !g_settings_ui)
+		{
+			oled_clear();
+			oled_write_line(0, 0, (char *)"Unknown Event");
+			oled_display();
+		}
+
 		break;
 	}
 	// digitalWrite(LED_GREEN, LOW);
 }
 
+/**
+ * @brief Timer callback if no downlink was received
+ *
+ * 	Shows display with LinkCheck results
+ *
+ */
 void no_dl_handler(void *)
 {
 	display_reason = 9;
@@ -1258,7 +1253,7 @@ void recv_cb_p2p(rui_lora_p2p_recv_t data)
 {
 	last_rssi = data.Rssi;
 	last_snr = data.Snr;
-	// packet_num++;
+	packet_num++;
 	tx_active = false;
 
 	display_reason = 1;
@@ -1376,32 +1371,11 @@ void timereq_cb_lpw(int32_t status)
 	if (sync_time_status == 0)
 	{
 		sync_time_status = 1;
-		char local_time[30] = {0};
-		struct tm localtime;
-		SysTime_t UnixEpoch = SysTimeGet();
-		UnixEpoch.Seconds -= 18;		  /*removing leap seconds*/
-		UnixEpoch.Seconds += 8 * 60 * 60; // Make it GMT+8
-		SysTimeLocalTime(UnixEpoch.Seconds, &localtime);
-		sprintf(local_time, "%02dh%02dm%02ds on %02d/%02d/%04d", localtime.tm_hour, localtime.tm_min, localtime.tm_sec,
-				localtime.tm_mon + 1, localtime.tm_mday, localtime.tm_year + 1900);
-		MYLOG("TREQ", "%s", local_time);
-
-		g_date_time.year = localtime.tm_year + 1900;
-		g_date_time.month = localtime.tm_mon + 1;
-		g_date_time.date = localtime.tm_mday;
-		g_date_time.hour = localtime.tm_hour;
-		g_date_time.minute = localtime.tm_min;
-		g_date_time.second = localtime.tm_sec;
-		if (has_rtc)
-		{
-			MYLOG("TREQ", "Sync RTC with LoRaWAN");
-			sync_time_status = 2;
-			set_rak12002(g_date_time.year, g_date_time.month, g_date_time.date, g_date_time.hour, g_date_time.minute, g_date_time.second);
-			read_rak12002();
-		}
 	}
 }
 
+// #include "service_lora.h"
+// #include "service_lora.c"
 /**
  * @brief Callback for LoRaMAC stack to get battery level
  *   Requires changes in the RUI3 files
@@ -1500,6 +1474,10 @@ void setup(void)
 	digitalWrite(LED_BLUE, LOW);
 
 	// Initialize custom AT commands
+	if (!init_settings_at())
+	{
+		MYLOG("APP", "Failed to initialize settings AT command");
+	}
 	if (!init_app_ver_at())
 	{
 		MYLOG("APP", "Failed to initialize App Version AT command");
@@ -1523,6 +1501,10 @@ void setup(void)
 	if (!init_product_info_at())
 	{
 		MYLOG("APP", "Failed to initialize Product Info AT command");
+	}
+	if (!init_timezone_at())
+	{
+		MYLOG("APP", "Failed to initialize TimeZone AT command");
 	}
 
 	// Get saved custom settings
@@ -1656,25 +1638,15 @@ void setup(void)
 		break;
 	}
 
-	// Keep GNSS active after reboot to enhance chances to get a valid location!
-	// // Keep GNSS active if forced in setup ==> Leads to faster battery drainage!
-	// if ((!g_custom_parameters.location_on) || (g_custom_parameters.test_mode != MODE_FIELDTESTER))
-	// {
-	// 	// Power down the module
-	// 	digitalWrite(WB_IO2, LOW);
-	// }
-
 	sprintf(line_str, "Test interval  %lds", g_custom_parameters.send_interval / 1000);
 	oled_add_line(line_str);
 
 	// Create timer for periodic sending
 	api.system.timer.create(RAK_TIMER_0, send_packet, RAK_TIMER_PERIODIC);
-	// if (lorawan_mode)
+
+	if (g_custom_parameters.send_interval != 0)
 	{
-		if (g_custom_parameters.send_interval != 0)
-		{
-			api.system.timer.start(RAK_TIMER_0, g_custom_parameters.send_interval, NULL);
-		}
+		api.system.timer.start(RAK_TIMER_0, g_custom_parameters.send_interval, NULL);
 	}
 
 	//  Create timer for display handler
@@ -1707,8 +1679,9 @@ void setup(void)
 }
 
 /**
- * @brief Loop (unused)
+ * @brief Loop 
  *
+ * 	Only used to catch button events
  */
 void loop(void)
 {

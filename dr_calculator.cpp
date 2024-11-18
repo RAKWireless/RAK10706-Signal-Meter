@@ -2,10 +2,10 @@
  * @file dr_calculator.cpp
  * @author Bernd Giesecke (bernd@giesecke.tk)
  * @brief Calculate the required datarate from the payload size
- * @version 0.1
- * @date 2023-01-06
+ * @version 0.2
+ * @date 2024-11-18
  *
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2024
  *
  */
 #include "app.h"

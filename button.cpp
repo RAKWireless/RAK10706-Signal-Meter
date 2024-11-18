@@ -2,8 +2,8 @@
  * @file button.cpp
  * @author Bernd Giesecke (bernd@giesecke.tk)
  * @brief Button handler
- * @version 0.1
- * @date 2024-06-23
+ * @version 0.2
+ * @date 2024-11-18
  *
  * @copyright Copyright (c) 2024
  *

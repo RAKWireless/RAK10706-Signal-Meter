@@ -2,10 +2,10 @@
  * @file app.h
  * @author Bernd Giesecke (bernd@giesecke.tk)
  * @brief Includes and defines
- * @version 0.1
- * @date 2023-12-29
+ * @version 0.2
+ * @date 2024-11-18
  *
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2024
  *
  */
 #ifndef _APP_H_
@@ -70,6 +70,7 @@ struct custom_param_s
 	uint8_t custom_packet[129] = {0x01, 0x02, 0x03, 0x04};
 	uint16_t custom_packet_len = 4;
 	bool dr_sweep_on = false;
+	int8_t timezone = 8;
 };
 // Structure size without CRC
 #define custom_params_len sizeof(custom_param_s)
@@ -96,6 +97,8 @@ bool init_rtc_at(void);
 bool init_app_ver_at(void);
 bool init_product_info_at(void);
 bool init_config_modules_at(void);
+bool init_timezone_at(void);
+bool init_settings_at(void);
 bool get_at_setting(void);
 bool save_at_setting(void);
 void set_linkcheck(void);
@@ -113,6 +116,7 @@ extern uint8_t sync_time_status;
 extern uint16_t *region_map[];
 extern volatile bool ready_to_dump;
 extern volatile int32_t packet_num;
+extern bool g_settings_active;
 
 // LoRaWAN stuff
 #include "wisblock_cayenne.h"
@@ -245,7 +249,7 @@ void dump_all_sd_files(void);
 void dump_sd_file(const char *path);
 void clear_sd_file(void);
 extern volatile result_s result;
-extern volatile char file_name[32];
+extern volatile char file_name[];
 extern bool has_sd;
 extern volatile bool sd_card_error;
 
@@ -268,6 +272,6 @@ struct date_time_s
 	uint8_t minute;
 	uint8_t second;
 };
-extern date_time_s g_date_time;
+extern volatile date_time_s g_date_time;
 
 #endif // _APP_H_

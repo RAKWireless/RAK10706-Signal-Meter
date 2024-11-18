@@ -2,8 +2,8 @@
  * @file sd-card.cpp
  * @author Bernd Giesecke (bernd@giesecke.tk)
  * @brief SD card functions
- * @version 0.1
- * @date 2024-09-26
+ * @version 0.2
+ * @date 2024-11-18
  *
  * @copyright Copyright (c) 2024
  *
@@ -36,6 +36,7 @@ bool init_sd(void)
 	delay(50);
 
 #if 0
+	// For debug, get more info about SD card
 	Sd2Card card;
 	SdVolume volume;
 
@@ -90,6 +91,7 @@ bool init_sd(void)
 	}
 
 #if 0
+	// For debug, list available files
 	File dir_file = SD.open("/", FILE_WRITE);
 	dir_sd(dir_file);
 	dir_file.close();
@@ -190,7 +192,7 @@ void dump_all_sd_files(void)
 				log_file.close(); // close the file.
 				Serial.flush();
 
-				// Delay to give receiver time to get last bytes of file
+				// Delay to give receiver time to get EOF marker
 				delay(500);
 
 				Serial.write(0x03);
@@ -258,25 +260,7 @@ void clear_sd_file(void)
 	digitalWrite(WB_IO2, HIGH);
 	delay(50);
 
-	// SD.begin(WB_SPI_CS);
-	// uint16_t file_num = 0;
-	// sprintf((char *)file_name, "%04d-log.csv", file_num);
-	// while (true)
-	// {
-	// 	if (SD.exists((const char *)file_name))
-	// 	{
-	// 		MYLOG("SD", "Delete %s:", file_name);
-	// 		SD.remove((const char *)file_name);
-	// 		file_num++;
-	// 		sprintf((char *)file_name, "%04d-log.csv", file_num);
-	// 		MYLOG("SD", "Next file %s", file_name);
-	// 	}
-	// 	else
-	// 	{
-	// 		break;
-	// 	}
-	// }
-
+	// Just to be sure
 	SD.end();
 
 	SD.begin(WB_SPI_CS);
