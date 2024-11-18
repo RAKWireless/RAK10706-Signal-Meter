@@ -3,14 +3,14 @@
     "postbuild": "python rename.py",
     "buildPreferences": [
         [
-            "compiler.cpp.extra_flags",
+            "build.extra_flags",
             "-DMY_DEBUG=0 -DSW_VERSION_0=2 -DSW_VERSION_1=0 -DSW_VERSION_2=8"
         ]
     ],
     "version": "2.0.8",
     "project": "RAK10706-Signal-Meter",
     "board": "rak_rui:nrf52:WisCoreRAK4631Board",
-    "port": "COM39",
+    "port": "COM22",
     "sketch": "RAK10706-Signal-Meter.ino",
     "output": "build"
 }

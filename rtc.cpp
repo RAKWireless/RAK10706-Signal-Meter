@@ -74,8 +74,9 @@ bool init_rak12002(void)
 
 	if (g_date_time.year > 2060)
 	{
-		// MYLOG("RTC", "Invalid year, no RTC present");
-		return false;
+		MYLOG("RTC", "Invalid year, no RTC present");
+		rtc.setTime(1962, 1, 1, 30, 12, 0, 0);
+		// return false;
 	}
 	MYLOG("RTC", "%d.%02d.%02d %d:%02d:%02d", g_date_time.year, g_date_time.month, g_date_time.date, g_date_time.hour, g_date_time.minute, g_date_time.second);
 	return true;
