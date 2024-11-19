@@ -1,6 +1,5 @@
 .vscode/c_cpp_properties.json
 .vscode/settings.json
 build
-flash.bat
+flash.txt
 generated/*+BL+SD.hex
-*.pdf

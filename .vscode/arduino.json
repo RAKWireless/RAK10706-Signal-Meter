@@ -3,7 +3,7 @@
     "postbuild": "python rename.py",
     "buildPreferences": [
         [
-            "build.extra_flags",
+            "compiler.cpp.extra_flags",
             "-DMY_DEBUG=0 -DSW_VERSION_0=2 -DSW_VERSION_1=0 -DSW_VERSION_2=8"
         ]
     ],
