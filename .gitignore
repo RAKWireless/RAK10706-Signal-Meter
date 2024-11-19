@@ -3,3 +3,4 @@
 build
 flash.bat
 generated/*+BL+SD.hex
+*.pdf
