@@ -364,6 +364,8 @@ void save_n_reboot(void)
 		oled_add_line((char *)"P2P mode");
 		break;
 	case MODE_FIELDTESTER:
+		oled_add_line((char *)"FieldTester mode");
+		break;
 	case MODE_FIELDTESTER_V2:
 		oled_add_line((char *)"FieldTester V2 mode");
 		break;
