@@ -388,9 +388,9 @@ void gnss_handler(void *)
 		if (check_dr(g_solution_data.getSize()))
 		{
 			// Always send confirmed packet to make sure a reply is received
-			MYLOG("GNSS", "Send from GNSS gnss_handler");
+			MYLOG("GNSS", "Send from GNSS gnss_handler fPort %d", fPort);
 			// Serial.println("+EVT:>>>>>>>>");
-			if (!api.lorawan.send(g_solution_data.getSize(), g_solution_data.getBuffer(), 1, true, 0))
+			if (!api.lorawan.send(g_solution_data.getSize(), g_solution_data.getBuffer(), fPort, true, 0))
 			{
 				tx_active = false;
 				MYLOG("GNSS", "LoRaWAN send returned error");

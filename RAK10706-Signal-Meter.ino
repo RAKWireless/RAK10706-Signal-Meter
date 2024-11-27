@@ -22,7 +22,8 @@ volatile uint8_t link_check_demod_margin;
 volatile uint8_t link_check_gateways;
 /** Got linkcheck response? */
 bool has_link_check = false;
-
+/** fPort to use */
+uint8_t fPort = 2;
 /** Sent packet counter */
 volatile int32_t packet_num = 0;
 /** Lost packet counter (only LPW mode)*/
@@ -130,9 +131,9 @@ void send_packet(void *data)
 					}
 
 					// Always send confirmed packet to make sure a reply is received
-					MYLOG("GNSS", "Send from send_packet FieldTester poll success");
+					MYLOG("GNSS", "Send from send_packet FieldTester poll success fPort %d", fPort);
 					// Serial.println("+EVT:>>>>>>>>");
-					if (!api.lorawan.send(g_solution_data.getSize(), g_solution_data.getBuffer(), 1, true, 0))
+					if (!api.lorawan.send(g_solution_data.getSize(), g_solution_data.getBuffer(), fPort, true, 0))
 					{
 						MYLOG("APP", "LoRaWAN send returned error");
 						tx_active = false;
@@ -174,9 +175,9 @@ void send_packet(void *data)
 							return;
 						}
 
-						MYLOG("GNSS", "Send from send_packet FieldTester forced");
+						MYLOG("GNSS", "Send from send_packet FieldTester forced fPort %d", fPort);
 						// Serial.println("+EVT:>>>>>>>>");
-						if (!api.lorawan.send(g_solution_data.getSize(), g_solution_data.getBuffer(), 1, true, 0))
+						if (!api.lorawan.send(g_solution_data.getSize(), g_solution_data.getBuffer(), fPort, true, 0))
 						{
 							tx_active = false;
 							MYLOG("GNSS", "LoRaWAN send returned error");
@@ -264,9 +265,9 @@ void send_packet(void *data)
 			}
 
 			// Always send confirmed packet to make sure a reply is received
-			MYLOG("APP", "Send from send_packet FieldTester location off");
+			MYLOG("APP", "Send from send_packet FieldTester location off fPort %d", fPort);
 			// Serial.println("+EVT:>>>>>>>>");
-			if (!api.lorawan.send(g_solution_data.getSize(), g_solution_data.getBuffer(), 1, true, 0))
+			if (!api.lorawan.send(g_solution_data.getSize(), g_solution_data.getBuffer(), fPort, true, 0))
 			{
 				MYLOG("APP", "LoRaWAN send returned error");
 				tx_active = false;
@@ -318,6 +319,7 @@ void send_packet(void *data)
 					{
 						g_last_long = 0.0;
 						g_last_lat = 0.0;
+						g_solution_data.addGNSS_T(0, 0, 0, 0, 0);
 					}
 
 					// Check if packet size fits DR
@@ -325,9 +327,8 @@ void send_packet(void *data)
 					{
 						return;
 					}
-					MYLOG("GNSS", "Send from send_packet LinkCheck location on");
-					// Serial.println("+EVT:>>>>>>>>");
-					if (!api.lorawan.send(g_solution_data.getSize(), g_solution_data.getBuffer(), 1, true, 0))
+					MYLOG("GNSS", "Send from send_packet LinkCheck location on fPort %d", fPort);
+					if (!api.lorawan.send(g_solution_data.getSize(), g_solution_data.getBuffer(), fPort, true, 0))
 					{
 						tx_active = false;
 						MYLOG("APP", "LoRaWAN send returned error");
@@ -343,9 +344,9 @@ void send_packet(void *data)
 					{
 						return;
 					}
-					MYLOG("GNSS", "Send from send_packet FieldTester location off");
+					MYLOG("GNSS", "Send from send_packet LinkCheck location off fPort %d", fPort);
 					// Serial.println("+EVT:>>>>>>>>");
-					if (!api.lorawan.send(g_custom_parameters.custom_packet_len, g_custom_parameters.custom_packet, 2, true, 0))
+					if (!api.lorawan.send(g_custom_parameters.custom_packet_len, g_custom_parameters.custom_packet, fPort, true, 0))
 					{
 						tx_active = false;
 						MYLOG("APP", "LoRaWAN send returned error");
@@ -1679,7 +1680,7 @@ void setup(void)
 }
 
 /**
- * @brief Loop 
+ * @brief Loop
  *
  * 	Only used to catch button events
  */
@@ -1729,6 +1730,7 @@ void set_linkcheck(void)
 		// Disable GNSS module
 		digitalWrite(WB_IO2, LOW);
 	}
+	fPort = 2;
 }
 
 /**
@@ -1794,4 +1796,5 @@ void set_field_tester(void)
 		// Enable GNSS module
 		digitalWrite(WB_IO2, HIGH);
 	}
+	fPort = 1;
 }

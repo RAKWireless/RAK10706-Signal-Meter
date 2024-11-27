@@ -56,7 +56,7 @@
 #ifndef SW_VERSION_0
 #define SW_VERSION_0 2
 #define SW_VERSION_1 0
-#define SW_VERSION_2 8
+#define SW_VERSION_2 9
 #endif
 /** Custom flash parameters structure */
 struct custom_param_s
@@ -117,6 +117,7 @@ extern uint16_t *region_map[];
 extern volatile bool ready_to_dump;
 extern volatile int32_t packet_num;
 extern bool g_settings_active;
+extern uint8_t fPort;
 
 // LoRaWAN stuff
 #include "wisblock_cayenne.h"
