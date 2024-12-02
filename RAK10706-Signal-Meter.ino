@@ -1666,14 +1666,14 @@ void setup(void)
 	// Create timer for FieldTester mode when no downlink arrives
 	api.system.timer.create(RAK_TIMER_4, no_dl_handler, RAK_TIMER_ONESHOT);
 
-	// If LoRaWAN, start join if required
-	if (lorawan_mode)
-	{
-		if (api.lorawan.njs.get() == 0)
-		{
-			api.lorawan.join(1, 1, 10, 50);
-		}
-	}
+	// If LoRaWAN, start join if required (Removed, because problem in production)
+	// if (lorawan_mode)
+	// {
+	// 	if (api.lorawan.njs.get() == 0)
+	// 	{
+	// 		api.lorawan.join(1, 1, 10, 50);
+	// 	}
+	// }
 	MYLOG("APP", "Start testing");
 	// Enable low power mode
 	api.system.lpm.set(1);
@@ -1718,7 +1718,8 @@ void set_linkcheck(void)
 	api.lorawan.cfm.set(false);
 	// Enable LinkCheck
 	api.lorawan.linkcheck.set(2);
-	api.lorawan.join(1, 1, 10, 50);
+	//  (Removed, because problem in production)
+	// api.lorawan.join(1, 1, 10, 50);
 
 	if (g_custom_parameters.location_on)
 	{
@@ -1790,7 +1791,8 @@ void set_field_tester(void)
 	api.lorawan.cfm.set(false);
 	// Disable LinkCheck
 	api.lorawan.linkcheck.set(2);
-	api.lorawan.join(1, 1, 10, 50);
+	//  (Removed, because problem in production)
+	// api.lorawan.join(1, 1, 10, 50);
 	if (g_custom_parameters.location_on)
 	{
 		// Enable GNSS module

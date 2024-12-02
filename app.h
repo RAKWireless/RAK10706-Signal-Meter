@@ -56,7 +56,7 @@
 #ifndef SW_VERSION_0
 #define SW_VERSION_0 2
 #define SW_VERSION_1 0
-#define SW_VERSION_2 9
+#define SW_VERSION_2 10
 #endif
 /** Custom flash parameters structure */
 struct custom_param_s
