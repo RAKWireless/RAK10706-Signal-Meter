@@ -243,13 +243,20 @@ The RTC module in the RAK10706 Signal Meter has a small back-up battery that can
 
 ----
 
+### Communication Debug
+
+Using the _**Log**_ button will open the log of the communication between the device and the application. This can be helpful to find problems with the SignalMeterTool application.    
+
+<center><img src="./assets/10-communication-log.png" size=25% alt="Communication Logs"></center> 
+----
+
 ### About the Application
 This application was designed using [Xojo](https://xojo.com/), a cross-platform App Development Platform.
 the project for this application can be found in the [SignalMeterTool/Project](./Project) folder.
 
 This application is licensed under MIT.
 
-<center><img src="./assets/mwx.png" size=25% alt="Log file controls"></center> 
+<center><img src="./assets/mwx.png" size=25% alt="Xojo"></center> 
 
 ----
 ----
