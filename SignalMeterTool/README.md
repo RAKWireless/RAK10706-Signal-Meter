@@ -7,7 +7,7 @@ Signal Meter Tool is an application to setup a RAK10706 without the hassle of se
 #### _**This is not an official RAKwireless application!**_      
 It was written in my free time and has no official support from RAKwireless.    
 It is not fully tested and still has bugs.     
-It is tested on Windows 11, on a Linux Ubuntu 24.04 based VM (automatic reconnection doesn't work in the VM) and should work macOS ????????? (not tested by me).
+It is tested on Windows 11, on a Linux Ubuntu 24.04 based VM (automatic reconnection doesn't work in the VM) and should work on macOS ????????? (not tested by me).
 
 # Installation 
 
@@ -28,7 +28,7 @@ sudo chown -R $USER ./SignalMeterTool
 ```
 
 ## macOS
-For macOS download the content of the [SignalMeterTool/Linux](./macOS) folder.     
+For macOS download the content of the [SignalMeterTool/macOS](./macOS) folder.     
 
 #### ⚠️ IMPORTANT ⚠️
 I have no machine with macOS and could not test the installation procedure or the application itself
@@ -50,10 +50,10 @@ After installation, start the application. The UI is separated into 5 parts.
 Check the available devices in the **Available Ports** list box. To find the correct port where the RAK10706 is connected, start the application first, then plug in the device into the USB port.    
 The list box will be automatically updated with the new device, which will be the RAK10706.     
 
-<center><img src="./assets/06-port-selection.png" alt="UI"></center>
+<center><img src="./assets/06-port-selection.png" alt="Port selection"></center>
 
 Once you have selected the port, push **Connect** to establish a connection to the device.     
-While connecting, the application will read the current settings from the RAk10706. This can take a while and you will see a red **Busy** wheel next to the **Connect** button.     
+While connecting, the application will read the current settings from the RAK10706. This can take a while and you will see a red **Busy** wheel next to the **Connect** button.     
 
 #### ⚠️ Potential errors during connection ⚠️
 1. No port or an invalid port was selected
@@ -62,7 +62,7 @@ While connecting, the application will read the current settings from the RAk107
 In this case, select a port from the list box.     
 
 2. Device is not a RAK10706 device
-<center><img src="./assets/14-error-not-rak17006.png" size=30% alt="Not a RAk10706"></center>     
+<center><img src="./assets/14-error-not-rak17006.png" size=30% alt="Not a RAK10706"></center>     
 
 This application does only work with the RAK10706 Signal Meter for LoRa!
 
@@ -133,7 +133,7 @@ This section of the UI allows to change the send interval, select the test mode 
 ----
 
 #### Send Interval
-The send interval defines the time between sending test packets. The value is set in seconds. _**Values below 10 seconds are not recommended for test modes that are using LoRaWAN. If set too short, the downlink packets from the LoRaWAN server might not be received.
+The send interval defines the time between sending test packets. The value is set in seconds. _**Values below 10 seconds are not recommended for test modes that are using LoRaWAN. If set too short, the downlink packets from the LoRaWAN server might not be received.**_
 
 ----
 
@@ -144,9 +144,13 @@ For differences between the test modes, check the [RAK10706 Quick Start Guide's]
 #### ⚠️ Important
 Changing the test mode, will immediately reboot the device and set it to the new selected test mode.
 
+----
+
 ### Update Device and Reload
 
 <center><img src="./assets/16-update-reload.png" size=30% alt="Log files folder"></center> 
+
+----
 
 #### Update Device
 
@@ -154,6 +158,8 @@ Once device settings are changed, the changes can be synced to the Signal Meter 
 
 #### ⚠️ Important
 After sending the new settings, the device will be rebooting!
+
+----
 
 #### Reload
 
@@ -170,6 +176,8 @@ An overview of different test scenarios are in the [RAK10706 Quick Start Guide's
 
 #### ⚠️ Important
 Testing with the location tracking disabled does increase the life-time of the battery and is recommended if not absolute required.
+
+----
 
 ### Reading and Deleting Log Files
 
@@ -241,7 +249,7 @@ the project for this application can be found in the [SignalMeterTool/Project](.
 
 This application is licensed under MIT.
 
-<center><img src="./assets/mwx.png" size=30% alt="Log file controls"></center> 
+<center><img src="./assets/mwx.png" size=25% alt="Log file controls"></center> 
 
 ----
 ----
