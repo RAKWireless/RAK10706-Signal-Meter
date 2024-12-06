@@ -10,7 +10,7 @@
     "version": "2.0.10",
     "project": "RAK10706-Signal-Meter",
     "board": "rak_rui:nrf52:WisCoreRAK4631Board",
-    "port": "COM22",
+    "port": "COM39",
     "sketch": "RAK10706-Signal-Meter.ino",
     "output": "build"
 }

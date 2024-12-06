@@ -1,0 +1,6 @@
+RAK10706 Signal Meter FW Release
+
+========================= Version: V2.0.10 Release Note =========================
+Date 05 December 2024
+
+1. First release
