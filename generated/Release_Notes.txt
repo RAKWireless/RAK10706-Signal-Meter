@@ -1,5 +1,10 @@
 RAK10706 Signal Meter FW Release
 
+========================= Version: V2.0.11 Release Note =========================
+Date 22 December 2024
+
+1. Add experimental Meshtastic support
+
 ========================= Version: V2.0.10 Release Note =========================
 Date 05 December 2024
 

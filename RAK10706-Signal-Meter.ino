@@ -82,6 +82,11 @@ volatile result_s result;
 /** Flag if TimeReq succeeded */
 uint8_t sync_time_status = 0;
 
+/** Meshtastic receiver node */
+uint32_t receiver_node = 0;
+/** Meshtastic sender node */
+uint32_t sender_node = 0;
+
 /**
  * @brief Send a LoRaWAN packet
  *
@@ -1184,14 +1189,88 @@ void handle_display(void *reason)
 				oled_display();
 			}
 			break;
+		case MODE_MESHTASTIC: // TX not supported yet
+			if (has_oled && !g_settings_ui)
+			{
+				oled_clear();
+				oled_write_header((char *)"RAK Signal Meter");
+				oled_write_line(0, 0, (char *)"Meshtastic mode");
+				sprintf(line_str, "TX finished");
+				oled_write_line(3, 0, line_str);
+				oled_display();
+			}
+			break;
 		}
 		tx_active = false;
+		break;
+	case 10: // RX packet display (only Meshtastic mode)
+		prepare_oled_header();
+		// MYLOG("APP", "RX_EVENT %d, disp_reason[0]);
+		// RX event display
+		if (has_sd && (g_custom_parameters.mesh_check_node != 0x00))
+		{
+			if (has_rtc)
+			{
+				read_rak12002();
+			}
+			else
+			{
+				get_mcu_time();
+			}
+			result.year = g_date_time.year;
+			result.month = g_date_time.month;
+			result.day = g_date_time.date;
+			result.hour = g_date_time.hour;
+			result.min = g_date_time.minute;
+			result.sec = g_date_time.second;
+			result.mode = MODE_P2P;
+			result.gw = 0;
+			result.lat = g_last_lat;
+			result.lng = g_last_long;
+			result.min_rssi = 0;
+			result.max_rssi = 0;
+			result.rx_rssi = last_rssi;
+			result.rx_snr = last_snr;
+			result.min_dst = 0;
+			result.max_dst = 0;
+			result.demod = 0;
+			result.lost = packet_lost;
+			write_sd_entry();
+		}
+		if (has_oled && !g_settings_ui)
+		{
+			sprintf(line_str, "Meshtastic mode");
+			oled_write_line(0, 0, line_str);
+			sprintf(line_str, "Received packets %d", packet_num);
+			oled_write_line(1, 0, line_str);
+			sprintf(line_str, "Receiver:");
+			oled_write_line(2, 0, line_str);
+			sprintf(line_str, "!%08X", receiver_node);
+			oled_write_line(2, 64, line_str);
+			sprintf(line_str, "Sender");
+			oled_write_line(3, 0, line_str);
+			sprintf(line_str, "!%08X", sender_node);
+			oled_write_line(3, 64, line_str);
+			sprintf(line_str, "RSSI %d", last_rssi);
+			oled_write_line(4, 0, line_str);
+			sprintf(line_str, "SNR %d", last_snr);
+			oled_write_line(4, 64, line_str);
+			oled_display();
+		}
+		MYLOG("APP", "Meshtastic mode");
+		MYLOG("APP", "Rcv: %08X Snd: %08X", receiver_node, sender_node);
+		MYLOG("APP", "RSSI: %d SNR %d", last_rssi, last_snr);
+		MYLOG("APP", "F %.3f SF %d BW %d",
+			  (float)api.lora.pfreq.get() / 1000000.0,
+			  api.lora.psf.get(),
+			  (api.lora.pbw.get() + 1) * 125);
 		break;
 	default: // Invalid
 		if (has_oled && !g_settings_ui)
 		{
 			oled_clear();
-			oled_write_line(0, 0, (char *)"Unknown Event");
+			sprintf(line_str, "Unknown Event %d", disp_reason[0]);
+			oled_write_line(0, 0, line_str);
 			oled_display();
 		}
 
@@ -1206,9 +1285,9 @@ void handle_display(void *reason)
  * 	Shows display with LinkCheck results
  *
  */
-void no_dl_handler(void *)
+void no_dl_handler(void *disp_reason)
 {
-	display_reason = 9;
+	display_reason = 7;
 	api.system.timer.start(RAK_TIMER_1, 250, &display_reason);
 }
 
@@ -1257,6 +1336,38 @@ void recv_cb_p2p(rui_lora_p2p_recv_t data)
 	packet_num++;
 	tx_active = false;
 
+	// Save RX buffer
+	uint8_t buffer[256] = {0x00};
+	memcpy(buffer, data.Buffer, data.BufferSize);
+	RadioBuffer *rx_Packet = (RadioBuffer *)buffer;
+
+	if ((rx_Packet->header.to == 0xFFFFFFFF) && (rx_Packet->header.from != 0x00)) // Assume Meshtastic
+	{
+		receiver_node = rx_Packet->header.to;
+		sender_node = rx_Packet->header.from;
+
+		bool fire_display = false;
+		if (g_custom_parameters.mesh_check_node == 0x00)
+		{
+			fire_display = true;
+		}
+		else if (sender_node != g_custom_parameters.mesh_check_node)
+		{
+			fire_display = false;
+		}
+		else
+		{
+			fire_display = true;
+		}
+
+		if (fire_display)
+		{
+			display_reason = 10;
+			api.system.timer.start(RAK_TIMER_1, 250, &display_reason);
+		}
+		return;
+	}
+	// Not Meshtastic
 	display_reason = 1;
 	api.system.timer.start(RAK_TIMER_1, 250, &display_reason);
 }
@@ -1507,6 +1618,10 @@ void setup(void)
 	{
 		MYLOG("APP", "Failed to initialize TimeZone AT command");
 	}
+	if (!init_mesh_node_at())
+	{
+		MYLOG("APP", "Failed to initialize Meshtastic ID AT command");
+	}
 
 	// Get saved custom settings
 	if (!get_at_setting())
@@ -1619,6 +1734,11 @@ void setup(void)
 	case MODE_P2P:
 		set_p2p();
 		oled_add_line((char *)"P2P mode");
+		oled_add_line((char *)"Start testing");
+		break;
+	case MODE_MESHTASTIC:
+		set_p2p();
+		oled_add_line((char *)"Meshtastic mode");
 		oled_add_line((char *)"Start testing");
 		break;
 	case MODE_FIELDTESTER:

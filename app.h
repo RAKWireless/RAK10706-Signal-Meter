@@ -18,9 +18,9 @@
 
 // Debug
 // Debug output set to 0 to disable app debug output
-#ifndef MY_DEBUG
-#define MY_DEBUG 0
-#endif
+// #ifndef MY_DEBUG
+// #define MY_DEBUG 0
+// #endif
 
 #if MY_DEBUG > 0
 #if defined(_VARIANT_RAK3172_) || defined(_VARIANT_RAK3172_SIP_)
@@ -56,7 +56,7 @@
 #ifndef SW_VERSION_0
 #define SW_VERSION_0 2
 #define SW_VERSION_1 0
-#define SW_VERSION_2 10
+#define SW_VERSION_2 11
 #endif
 /** Custom flash parameters structure */
 struct custom_param_s
@@ -71,6 +71,7 @@ struct custom_param_s
 	uint16_t custom_packet_len = 4;
 	bool dr_sweep_on = false;
 	int8_t timezone = 8;
+	uint32_t mesh_check_node = 0;
 };
 // Structure size without CRC
 #define custom_params_len sizeof(custom_param_s)
@@ -81,7 +82,8 @@ typedef enum test_mode_num
 	MODE_P2P = 1,
 	MODE_FIELDTESTER = 2,
 	MODE_FIELDTESTER_V2 = 3,
-	INVALID_MODE = 4
+	MODE_MESHTASTIC = 4,
+	INVALID_MODE = 5
 } test_mode_num_t;
 
 /** Custom flash parameters */
@@ -99,6 +101,7 @@ bool init_product_info_at(void);
 bool init_config_modules_at(void);
 bool init_timezone_at(void);
 bool init_settings_at(void);
+bool init_mesh_node_at(void);
 bool get_at_setting(void);
 bool save_at_setting(void);
 void set_linkcheck(void);
@@ -274,5 +277,7 @@ struct date_time_s
 	uint8_t second;
 };
 extern volatile date_time_s g_date_time;
+
+#include "meshtastic.h"
 
 #endif // _APP_H_

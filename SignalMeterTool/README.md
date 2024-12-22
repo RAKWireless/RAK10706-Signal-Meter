@@ -7,7 +7,8 @@ Signal Meter Tool is an application to setup a RAK10706 without the hassle of se
 #### _**This is not an official RAKwireless application!**_      
 It was written in my free time and has no official support from RAKwireless.    
 It is not fully tested and still has bugs.     
-It is tested on Windows 11, on a Linux Ubuntu 24.04 based VM (automatic reconnection doesn't work in the VM) and should work on macOS ????????? (not tested by me).
+It is tested on Windows 11, on a Linux Ubuntu 24.04 based VM (automatic reconnection doesn't work in the VM) and should work on macOS ????????? (not tested by me).    
+It has some experimental support to be used as Meshtastic Signal Tester, but this feature is work in progress.
 
 # Installation 
 
@@ -37,11 +38,17 @@ I have no machine with macOS and could not test the installation procedure or th
 
 # Usage
 After installation, start the application. The UI is separated into 5 parts.    
-1. Serial Ports, Connect/Disconnect button, Update Device and Reload Device
+1. Serial Ports, Connect/Disconnect button, Load Device Settings and Update Device Settings
 2. LoRa P2P and LoRaWAN settings
 3. Test mode settings
 4. Buttons to read or delete log files _**(only available if the device is equipped with an SD card)**_
-5. Functions to setup the RTC and the timezone _**(only available if the device is equipped with a RTC module)**_
+5. Functions to setup the RTC and the timezone _**(only available if the device is equipped with a RTC module)**_    
+
+In addition there are 3 parts for debugging.     
+
+6. Options to restart the device and to see current device settings from log    
+7. Log output of the communication with the device. It can be used as well to send manual AT commands.        
+8. Switching the tool function from device setup mode to debug mode, where the device will start its test mode and the log output will show information.    
 
 <center><img src="./assets/02-ui-parts.png" alt="UI"></center>
 
@@ -61,17 +68,29 @@ While connecting, the application will read the current settings from the RAK107
 
 In this case, select a port from the list box.     
 
-2. Device is not a RAK10706 device
+#### ⚠️ Potential errors while loading the device settings ⚠️
+
+1. Device is not a RAK10706 device
 <center><img src="./assets/14-error-not-rak17006.png" size=30% alt="Not a RAK10706"></center>     
 
-This application does only work with the RAK10706 Signal Meter for LoRa!
+This error will show when Load Device Settings is clicked, but the connected device is not a RAK10706.    This application does only work with the RAK10706 Signal Meter for LoRa!
 
-3. A communication error occured    
+2. A communication error occured    
 <center><img src="./assets/13-error-not-rui3-device.png" size=30% alt="Communication error"></center>     
 
 The device does not support RUI3 AT commands or a communication error occured during fetching the device settings. In this case, disconnect the device and restart the application. Make sure the device you are connecting to is a RAK10706 Signal Meter for LoRa.
 
 ----
+
+## Load device settings
+
+After connecting the device, the _**Load Device Settings**_ button will load the current settings from the device. 
+
+<center><img src="./assets/17-load-settings.png" size=30% alt="Communication error"></center>     
+
+#### ⚠️ Occasionally the application can hang while reading the current settings ⚠️    
+In this case, disconnect the device and restart the application.    
+The reason for this bug is still under investigation.
 
 ## Application UI after successful connection
 
@@ -122,6 +141,16 @@ If the device is in LoRa P2P test mode, the UI will show the P2P (Phy) settings.
 #### ⚠️ Information
 The device setup supports only LoRa mode, it is not possible to setup the device to FSK mode. If this is required, it has to be done with AT commands.     
 
+#### ⚠️ Experimental Meshtastic support
+In the right side of the P2P test mode, settings for the Meshtastic network can be found.    
+After selecting the Meshtastic Region, the Modem Preset and the Frequency Slot, the _**Apply Settings**_ button will set the P2P parameters for these Meshtastic settings.    
+
+The RAK10706 can only listen to Meshtastic data packets. It cannot decode the content. But the basic information received can show if the RAK10706 is in coverage range of the Meshtastic network and the signal quality of the received packets.    
+It is _**NOT**_ possible to send packets to Meshtastic nodes.    
+To test the range of a specific Meshtastic device, the Meshnode DUT ID can be setup, then the RAK10706 will only show information about received packets from this specific Meshtastic Node.    
+<center><img src="./assets/18-meshtastic-output.png" size=30% alt="LoRaWAN P2P settings"></center>
+#### ⚠️ Experimental Meshtastic support
+
 ----
 
 ### Send Interval, Test Mode and Location
@@ -146,9 +175,27 @@ Changing the test mode, will immediately reboot the device and set it to the new
 
 ----
 
-### Update Device and Reload
+#### Location
+Depending on the test scenario (indoor or outdoor) it is possible to enable or disable the location module of the Signal Meter. 
+An overview of different test scenarios are in the [RAK10706 Quick Start Guide's](https://docs.rakwireless.com/product-categories/wisnode/rak10706/quickstart#typical-test-scenarios) _**Typical Test Scenarios**_ section.
+
+#### ⚠️ Important
+Testing with the location tracking disabled does increase the life-time of the battery and is recommended if not absolute required.
+
+----
+
+### Load and Update Device Settings
 
 <center><img src="./assets/16-update-reload.png" size=30% alt="Log files folder"></center> 
+
+----
+
+#### Load
+
+The _**Load Device Settings**_ button will load the current device settings and update the UI of the application.    
+
+#### ⚠️ Important
+Most changes in the settings are sent immediately to the device. Reloading the settings will not recover the original settings of the device.    
 
 ----
 
@@ -157,25 +204,7 @@ Changing the test mode, will immediately reboot the device and set it to the new
 Once device settings are changed, the changes can be synced to the Signal Meter using the _**Update Device**_ button.
 
 #### ⚠️ Important
-After sending the new settings, the device will be rebooting!
-
-----
-
-#### Reload
-
-In case some settings are changed by mistake, the original settings can be reloaded from the device by using the _**Reload**_ button.
-
-#### ⚠️ Important
-Reloading the settings will only recover the original settings of the device _**BEFORE**_ the settings were synced with the device! Once the _**Update Device**_ button was used, the original settings cannot be recovered.
-
-----
-
-#### Location
-Depending on the test scenario (indoor or outdoor) it is possible to enable or disable the location module of the Signal Meter. 
-An overview of different test scenarios are in the [RAK10706 Quick Start Guide's](https://docs.rakwireless.com/product-categories/wisnode/rak10706/quickstart#typical-test-scenarios) _**Typical Test Scenarios**_ section.
-
-#### ⚠️ Important
-Testing with the location tracking disabled does increase the life-time of the battery and is recommended if not absolute required.
+Most changes in the settings are sent immediately to the device. The exception are the LoRaWAN credentials for both OTAA and ABP mode.    
 
 ----
 
@@ -219,6 +248,16 @@ After deleting the log files is finished, the device will be rebooting!
 
 ----
 
+#### Device Restart and Device Status
+
+The _**Device Restart**_ button will force a reboot of the device, if desired.    
+
+The _** Device Status**_ will get the current device settings and display them in the log file. It does not change the settings in the UI!    
+
+<center><img src="./assets/18-device-control.png" size=30% alt="Log files"></center> 
+
+----
+
 ### Setting the RTC and the Time Zone
 
 <center><img src="./assets/09-rtc-setup.png" size=30% alt="Log file controls"></center> 
@@ -245,9 +284,16 @@ The RTC module in the RAK10706 Signal Meter has a small back-up battery that can
 
 ### Communication Debug
 
-Using the _**Log**_ button will open the log of the communication between the device and the application. This can be helpful to find problems with the SignalMeterTool application.    
+The log window on the right side will show the communication between the SignalMeterTool and the device. It is helpful only for debug purposes.    
+
+In addition it has a input window, where AT commands can be sent to the device for additional changes, that are not supported by the tool.    
+
+The _**Clear**_ button deletes all lines from the log window.    
+
+Using the _**Mode**_ selector, the tool can be switched between _Setup_ and _Debug_ mode. While in _**Setup**_ mode, the device does not perform range testing. Switching to _**Debug**_ mode, enables the test sequence on the device and it will show some debug information in the log window.. This can be helpful to find problems with the SignalMeterTool application.    
 
 <center><img src="./assets/10-communication-log.png" size=25% alt="Communication Logs"></center> 
+
 ----
 
 ### About the Application

@@ -301,6 +301,9 @@ void display_show_menu(char *menu[], uint8_t menu_len, uint8_t sel_menu, uint8_t
 		case MODE_P2P:
 			oled_write_line(2, 0, (char *)"Mode: P2P");
 			break;
+		case MODE_MESHTASTIC:
+			oled_write_line(2, 0, (char *)"Mode: Meshtastic");
+			break;
 		case MODE_FIELDTESTER:
 			oled_write_line(2, 0, (char *)"Mode: FieldTester");
 			break;

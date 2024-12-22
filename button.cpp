@@ -261,7 +261,7 @@ void save_n_reboot(void)
 		oled_display();
 		save_at_setting();
 		delay(3000);
-		if (g_custom_parameters.test_mode == MODE_P2P)
+		if ((g_custom_parameters.test_mode == MODE_P2P) || (g_custom_parameters.test_mode == MODE_MESHTASTIC))
 		{
 			api.lora.precv(0);
 			api.lorawan.join(0, 0, 10, 50);
@@ -362,6 +362,9 @@ void save_n_reboot(void)
 		break;
 	case MODE_P2P:
 		oled_add_line((char *)"P2P mode");
+		break;
+	case MODE_MESHTASTIC:
+		oled_add_line((char *)"Meshtastic mode");
 		break;
 	case MODE_FIELDTESTER:
 		oled_add_line((char *)"FieldTester mode");
@@ -577,7 +580,7 @@ void handle_button(void)
 		{
 			if (api.lorawan.nwm.get() == 1)
 			{
-				if (g_custom_parameters.test_mode != MODE_P2P)
+				if ((g_custom_parameters.test_mode != MODE_P2P) && (g_custom_parameters.test_mode != MODE_MESHTASTIC))
 				{
 					// Sweep through all DR (only LoRaWAN)
 					if (!tx_active)

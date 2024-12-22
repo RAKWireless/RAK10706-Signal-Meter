@@ -60,6 +60,7 @@ int app_ver_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int product_info_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int avail_modules_handler(SERIAL_PORT port, char *cmd, stParam *param);
 int settings_handler(SERIAL_PORT port, char *cmd, stParam *param);
+int mesh_node_handler(SERIAL_PORT port, char *cmd, stParam *param);
 
 /**
  * @brief Add send interval AT command
@@ -201,6 +202,7 @@ int test_mode_handler(SERIAL_PORT port, char *cmd, stParam *param)
 				set_linkcheck();
 				break;
 			case MODE_P2P:
+			case MODE_MESHTASTIC:
 				set_p2p();
 				break;
 			case MODE_FIELDTESTER:
@@ -290,7 +292,7 @@ int custom_pckg_handler(SERIAL_PORT port, char *cmd, stParam *param)
 }
 
 /**
- * @brief Add send interval AT command
+ * @brief Add send log files command
  *
  * @return true if success
  * @return false if failed
@@ -304,7 +306,7 @@ bool init_dump_logs_at(void)
 }
 
 /**
- * @brief Handler for send interval AT command
+ * @brief Handler for send log files command
  *
  * @param port Serial port used
  * @param cmd char array with the received AT command
@@ -690,7 +692,7 @@ int settings_handler(SERIAL_PORT port, char *cmd, stParam *param)
 				api.system.timer.start(RAK_TIMER_0, g_custom_parameters.send_interval, NULL);
 			}
 
-			if (g_custom_parameters.test_mode == MODE_P2P)
+			if ((g_custom_parameters.test_mode == MODE_P2P) || (g_custom_parameters.test_mode == MODE_MESHTASTIC))
 			{
 				api.lora.precv(65533);
 			}
@@ -702,7 +704,7 @@ int settings_handler(SERIAL_PORT port, char *cmd, stParam *param)
 			// Stop the timer
 			api.system.timer.stop(RAK_TIMER_0);
 
-			if (g_custom_parameters.test_mode == MODE_P2P)
+			if ((g_custom_parameters.test_mode == MODE_P2P) || (g_custom_parameters.test_mode == MODE_MESHTASTIC))
 			{
 				api.lora.precv(0);
 			}
@@ -710,6 +712,45 @@ int settings_handler(SERIAL_PORT port, char *cmd, stParam *param)
 		}
 	}
 	return AT_PARAM_ERROR;
+}
+
+bool init_mesh_node_at(void)
+{
+	return api.system.atMode.add((char *)"MESH",
+								 (char *)"Set Meshtastic Node ID for testing",
+								 (char *)"MESH", mesh_node_handler,
+								 RAK_ATCMD_PERM_READ | RAK_ATCMD_PERM_WRITE);
+}
+
+int mesh_node_handler(SERIAL_PORT port, char *cmd, stParam *param)
+{
+	if (param->argc == 1 && !strcmp(param->argv[0], "?"))
+	{
+		AT_PRINTF("%s=%08X", cmd, g_custom_parameters.mesh_check_node);
+		return AT_OK;
+	}
+	else if (param->argc >= 1)
+	{
+		Serial.printf("Len: %d\r\n", strlen(cmd));
+		if (strlen(cmd) < 8)
+		{
+			return AT_PARAM_ERROR;
+		}
+
+		Serial.printf("Input %s\r\n", param->argv[0]);
+
+		Serial.printf("strtol: %08X\r\n", strtol(param->argv[0], NULL, 16));
+
+		uint32_t new_mesh_id = strtoul(param->argv[0], NULL, 16);
+
+		Serial.printf("Got ID %08X\r\n", new_mesh_id);
+		if (new_mesh_id != g_custom_parameters.mesh_check_node)
+		{
+			g_custom_parameters.mesh_check_node = new_mesh_id;
+			save_at_setting();
+		}
+		return AT_OK;
+	}
 }
 
 /**
@@ -972,6 +1013,7 @@ bool get_at_setting(void)
 		g_custom_parameters.custom_packet[3] = 0x04;
 		g_custom_parameters.custom_packet_len = 4;
 		g_custom_parameters.timezone = 8;
+		g_custom_parameters.mesh_check_node = 0;
 		save_at_setting();
 		return false;
 	}
@@ -1033,6 +1075,9 @@ bool get_at_setting(void)
 	{
 		g_custom_parameters.timezone = temp_params.timezone;
 	}
+
+	// cannot check mesh node id
+	g_custom_parameters.mesh_check_node = temp_params.mesh_check_node;
 
 	if (found_problem)
 	{
