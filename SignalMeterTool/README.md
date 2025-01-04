@@ -37,8 +37,8 @@ I have no machine with macOS and could not test the installation procedure or th
 ----
 
 # Usage
-After installation, start the application. The UI is separated into 5 parts.    
-1. Serial Ports, Connect/Disconnect button, Load Device Settings and Update Device Settings
+After installation, start the application. The UI is separated into 6 parts.    
+1. Serial Ports, Connect/Disconnect button, Load Device Settings, Update Device Settings, option to restart the device and to see current device settings in the log output 
 2. LoRa P2P and LoRaWAN settings
 3. Test mode settings
 4. Buttons to read or delete log files _**(only available if the device is equipped with an SD card)**_
@@ -46,9 +46,8 @@ After installation, start the application. The UI is separated into 5 parts.
 
 In addition there are 3 parts for debugging.     
 
-6. Options to restart the device and to see current device settings from log    
-7. Log output of the communication with the device. It can be used as well to send manual AT commands.        
-8. Switching the tool function from device setup mode to debug mode, where the device will start its test mode and the log output will show information.    
+6. Log output of the communication with the device. It can be used as well to send manual AT commands.        
+7. Switching the tool function from device setup mode to debug mode, where the device will start its test mode and the log output will show information.    
 
 <center><img src="./assets/02-ui-parts.png" alt="UI"></center>
 
@@ -60,7 +59,8 @@ The list box will be automatically updated with the new device, which will be th
 <center><img src="./assets/06-port-selection.png" alt="Port selection"></center>
 
 Once you have selected the port, push **Connect** to establish a connection to the device.     
-While connecting, the application will read the current settings from the RAK10706. This can take a while and you will see a red **Busy** wheel next to the **Connect** button.     
+     
+Once connected, Use the **Load Device Settings** button to read the current settings from the RAK10706. This can take a while and you will see a red **Busy** wheel next to the **Connect** button.     
 
 #### ⚠️ Potential errors during connection ⚠️
 1. No port or an invalid port was selected
@@ -86,7 +86,7 @@ The device does not support RUI3 AT commands or a communication error occured du
 
 After connecting the device, the _**Load Device Settings**_ button will load the current settings from the device. 
 
-<center><img src="./assets/17-load-settings.png" size=30% alt="Communication error"></center>     
+<center><img src="./assets/17-load-settings.png" size=30% alt="Load device settings"></center>     
 
 #### ⚠️ Occasionally the application can hang while reading the current settings ⚠️    
 In this case, disconnect the device and restart the application.    
@@ -134,7 +134,7 @@ The credentials can be copied from the application and used to register the devi
 ----
 
 ### LoRa P2P test mode
-If the device is in LoRa P2P test mode, the UI will show the P2P (Phy) settings. These settings must be identical to the LoRa P2P network that other LoRa nodes in the test are using:
+If the device is in LoRa P2P test mode, the UI will show the LoRa P2P (Phy) settings. These settings must be identical to the LoRa P2P network that other LoRa nodes in the test are using:
 
 <center><img src="./assets/05-lora-p2p-settings.png" size=30% alt="LoRaWAN P2P settings"></center>     
 
@@ -145,10 +145,11 @@ The device setup supports only LoRa mode, it is not possible to setup the device
 In the right side of the P2P test mode, settings for the Meshtastic network can be found.    
 After selecting the Meshtastic Region, the Modem Preset and the Frequency Slot, the _**Apply Settings**_ button will set the P2P parameters for these Meshtastic settings.    
 
-The RAK10706 can only listen to Meshtastic data packets. It cannot decode the content. But the basic information received can show if the RAK10706 is in coverage range of the Meshtastic network and the signal quality of the received packets.    
+_The RAK10706 can only listen to Meshtastic data packets. It cannot decode the content. But the basic information received can show if the RAK10706 is in coverage range of the Meshtastic network and the signal quality of the received packets._    
 It is _**NOT**_ possible to send packets to Meshtastic nodes.    
 To test the range of a specific Meshtastic device, the Meshnode DUT ID can be setup, then the RAK10706 will only show information about received packets from this specific Meshtastic Node.    
 <center><img src="./assets/18-meshtastic-output.png" size=30% alt="LoRaWAN P2P settings"></center>
+
 #### ⚠️ Experimental Meshtastic support
 
 ----
@@ -168,7 +169,7 @@ The send interval defines the time between sending test packets. The value is se
 
 #### Test Mode selection
 Four different test modes are available on the RAK10706 Signal Meter. Three of them are working in LoRaWAN mode, one is for LoRa P2P.    
-For differences between the test modes, check the [RAK10706 Quick Start Guide's](https://docs.rakwireless.com/product-categories/wisnode/rak10706/quickstart) _**https://docs.rakwireless.com/product-categories/wisnode/rak10706/quickstart#difference-between-the-rak10706-signal-meter-and-the-rak10701-field-tester**_ section.
+For differences between the test modes, check the [RAK10706 Quick Start Guide's](https://docs.rakwireless.com/product-categories/wisnode/rak10706/quickstart) and [differences between the RAK10706 Signal Meter and the RAK10701 Field Tester](https://docs.rakwireless.com/product-categories/wisnode/rak10706/quickstart#difference-between-the-rak10706-signal-meter-and-the-rak10701-field-tester) section.
 
 #### ⚠️ Important
 Changing the test mode, will immediately reboot the device and set it to the new selected test mode.
