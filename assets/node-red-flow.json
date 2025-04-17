@@ -1,0 +1,469 @@
+[
+    {
+        "id": "30a996ec05d123bd",
+        "type": "tab",
+        "label": "FieldTester Backend",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "3baa7a8c3c4f9665",
+        "type": "mqtt in",
+        "z": "30a996ec05d123bd",
+        "name": "CS uplink",
+        "topic": "application/ea5de943-e1d0-48d2-bca7-dd1241474eba/#",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "73df369e44600a55",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 560,
+        "wires": [
+            [
+                "f211dae0e8514e5e",
+                "d80b01624797fcaa"
+            ]
+        ]
+    },
+    {
+        "id": "986be703a6806ca3",
+        "type": "mqtt out",
+        "z": "30a996ec05d123bd",
+        "name": "CS downlink",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "73df369e44600a55",
+        "x": 1090,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "b3c826bce798dfff",
+        "type": "field_tester_service",
+        "z": "30a996ec05d123bd",
+        "name": "FieldTester-Backend",
+        "parser": "cs34",
+        "x": 680,
+        "y": 260,
+        "wires": [
+            [
+                "986be703a6806ca3",
+                "c5d3d57f4103dbef"
+            ]
+        ]
+    },
+    {
+        "id": "c5d3d57f4103dbef",
+        "type": "debug",
+        "z": "30a996ec05d123bd",
+        "name": "MQTT out",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1090,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "98a74c73c1b92881",
+        "type": "debug",
+        "z": "30a996ec05d123bd",
+        "name": "MQTT in",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "d80b01624797fcaa",
+        "type": "switch",
+        "z": "30a996ec05d123bd",
+        "name": "Filter DevEUI's",
+        "property": "payload.deviceInfo.devEui",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "ac1f09fffe160e13",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ac1f09fffe1939fd",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ac1f09fffe160dfa",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ac1f09fffe0fdea2",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "be0fa6c0d5c8407c",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "b77ad05c356dee8a",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "312ed1c27a71f515",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ac1f09fffe1993ed",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ac1f09fffe1939e3",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 9,
+        "x": 360,
+        "y": 620,
+        "wires": [
+            [
+                "b3c826bce798dfff",
+                "2e1a4fa00c35c391"
+            ],
+            [
+                "b3c826bce798dfff",
+                "2e1a4fa00c35c391"
+            ],
+            [
+                "2e1a4fa00c35c391",
+                "b3c826bce798dfff"
+            ],
+            [
+                "2e1a4fa00c35c391"
+            ],
+            [
+                "2e1a4fa00c35c391",
+                "98a74c73c1b92881"
+            ],
+            [
+                "2e1a4fa00c35c391",
+                "98a74c73c1b92881"
+            ],
+            [
+                "2e1a4fa00c35c391",
+                "98a74c73c1b92881"
+            ],
+            [
+                "b3c826bce798dfff",
+                "2e1a4fa00c35c391",
+                "98a74c73c1b92881"
+            ],
+            [
+                "2e1a4fa00c35c391",
+                "b3c826bce798dfff"
+            ]
+        ],
+        "inputLabels": [
+            "MQTT in"
+        ],
+        "outputLabels": [
+            "Tester ac1f09fffe160e13",
+            "Tester ac1f09fffe1939fd",
+            "",
+            "Tester ac1f09fffe0fdea2",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
+    },
+    {
+        "id": "f211dae0e8514e5e",
+        "type": "debug",
+        "z": "30a996ec05d123bd",
+        "name": "MQTT all",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 380,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "2e1a4fa00c35c391",
+        "type": "function",
+        "z": "30a996ec05d123bd",
+        "name": "World Mapper Output",
+        "func": "const EARTH_RADIUS = 6371000;\n\nfunction degreesToRadians(degrees) {\n    return degrees * (Math.PI / 180);\n}\n\nfunction radiansToDegrees(radians) {\n    return radians * (180 / Math.PI);\n}\n\nfunction angularDistance(location1, location2) {\n    const location1_latitude_radians = degreesToRadians(location1.latitude);\n    const location2_latitude_radians = degreesToRadians(location2.latitude);\n    return Math.acos(\n        Math.sin(location1_latitude_radians) * Math.sin(location2_latitude_radians) +\n        Math.cos(location1_latitude_radians) * Math.cos(location2_latitude_radians) *\n        Math.cos(degreesToRadians(Math.abs(location1.longitude - location2.longitude)))\n    );\n}\n\nfunction circleDistance(location1, location2) {\n    return EARTH_RADIUS * angularDistance(location1, location2);\n}\n\nfunction constrain(value, min, max) {\n    if (value < min) return min;\n    if (value > max) return max;\n    return value;\n}\n\n// --------------------------------------------------------------------\n// Data process\n// --------------------------------------------------------------------\n\nvar new_payload = [];\n\nfunction ftdProcess(bytes, port, sequence_id, gateways) {\n\n    // Filter wrong messages by length\n    if ((1 == port) && (bytes.length != 10)) {\n        node.warn(\"Wrong length for fPort 1 \" + bytes.length);\n        return null;\n    }\n    if ((11 == port) && (bytes.length != 11)) {\n        node.warn(\"Wrong length for fPort 11 \" + bytes.length);\n        return null;\n    }\n\n    const messages = new Array(gateways.length);\n\n    // decode bytes    \n    var lonSign = (bytes[0] >> 7) & 0x01 ? -1 : 1;\n    var latSign = (bytes[0] >> 6) & 0x01 ? -1 : 1;\n    var encLat = ((bytes[0] & 0x3f) << 17) + (bytes[1] << 9) + (bytes[2] << 1) + (bytes[3] >> 7);\n    var encLon = ((bytes[3] & 0x7f) << 16) + (bytes[4] << 8) + bytes[5];\n    var hdop = bytes[8] / 10;\n    var sats = bytes[9];\n\n    // send only acceptable quality of position to mappers\n    if ((hdop > 2) || (sats < 5)) {\n        // node.warn(\"hdop \" + hdop + \" sats \" + sats);\n        // return null; // Accept locations with a lower quality\n    }\n\n    var data = {};\n\n    data.latitude = latSign * (encLat * 108 + 53) / 10000000;\n    data.longitude = lonSign * (encLon * 215 + 107) / 10000000;\n\n    // build gateway data\n    data.num_gateways = gateways.length;\n\n    data.min_distance = 1e6;\n    data.max_distance = 0;\n    data.min_rssi = 200;\n    data.max_rssi = -200;\n    data.min_snr = 200;\n    data.max_snr = -200;\n    var gateway_num = 0;\n    var gw_id = \"\";\n    var gw_colors = [\"yellow\", \"lime\", \"red\", \"teal\", \"navy\", \"fuchsia\", \"green\", \"purple\", \"darkblue\", \"orange\"];\n\n    gateways.forEach(function (gateway) {\n        node.log(\"dr\" + gateway.dr);\n        gw_id = gateway.gatewayId;\n        if (gateway.rssi < data.min_rssi) data.min_rssi = gateway.rssi;\n        if (gateway.rssi > data.max_rssi) data.max_rssi = gateway.rssi;\n        if (gateway.snr < data.min_snr) data.min_snr = gateway.snr;\n        if (gateway.snr > data.max_snr) data.max_snr = gateway.snr;\n        if (gateway.location) {\n            var distance = parseInt(circleDistance(data, gateway.location));\n            if (distance < data.min_distance) data.min_distance = distance;\n            if (distance > data.max_distance) data.max_distance = distance;\n\n            // Push gateway location to the world map\n            new_payload.push({ payload: { name: gw_id, lat: gateway.location.latitude, lon: gateway.location.longitude, iconColor: gw_colors[gateway_num], label: gw_id, icon: \"cloud-upload\", Distance: (distance.toString() + \"m\") } });\n            // node.warn(\"Pushed \" + gw_id + \" numGW = \" + gateway_num + \" Color \" + gw_colors[gateway_num]);\n            messages[gateway_num + 1] = new_payload;\n            new_payload = [];\n            gateway_num++;\n        }\n\n    });\n\n    // Push tester location to the world map\n    if ((data.latitude < 0.00001) && (data.longitude < 0.0001)) {\n        // No tester location\n        new_payload.push({ payload: { name: \"Tester-\" + msg.payload.deviceInfo.devEui, lat: data.latitude, lon: data.longitude, iconColor: \"blue\", label: \"Tester-\" + msg.payload.deviceInfo.devEui, icon: \"rss\", HDOP: hdop, Satellites: sats, Gateways: data.num_gateways, Min_RSSI: data.min_rssi, Max_RSSI: data.max_rssi, Min_SNR: data.min_snr, Max_SNR: data.max_snr, deleted: true } });\n    } else {\n        new_payload.push({ payload: { name: \"Tester-\" + msg.payload.deviceInfo.devEui, lat: data.latitude, lon: data.longitude, iconColor: \"blue\", label: \"Tester-\" + msg.payload.deviceInfo.devEui, icon: \"rss\", HDOP: hdop, Satellites: sats, Gateways: data.num_gateways, Min_RSSI: data.min_rssi, Max_RSSI: data.max_rssi, Min_SNR: data.min_snr, Max_SNR: data.max_snr } });\n    }\n    messages[0] = new_payload;\n    new_payload = [];\n\n    return messages;\n}\n\nfunction ftdProcess_V2(bytes, port, sequence_id, gateways) {\n\n    // Filter wrong messages by length\n    if ((1 == port) && (bytes.length != 10)) {\n        node.warn(\"Wrong length for fPort 1 \" + bytes.length);\n        return null;\n    }\n    if ((11 == port) && (bytes.length != 11)) {\n        node.warn(\"Wrong length for fPort 11 \" + bytes.length);\n        return null;\n    }\n\n    const messages = new Array(gateways.length);\n\n    // decode bytes    \n    var lonSign = (bytes[0] >> 7) & 0x01 ? -1 : 1;\n    var latSign = (bytes[0] >> 6) & 0x01 ? -1 : 1;\n    var encLat = ((bytes[0] & 0x3f) << 17) + (bytes[1] << 9) + (bytes[2] << 1) + (bytes[3] >> 7);\n    var encLon = ((bytes[3] & 0x7f) << 16) + (bytes[4] << 8) + bytes[5];\n    // var hdop = bytes[8] / 10;\n    // var sats = bytes[9];\n\n    // // send only acceptable quality of position to mappers\n    // if ((hdop > 2) || (sats < 5)) {\n    //     node.warn(\"hdop \" + hdop + \" sats \" + sats);\n    //     // return null; // Accept locations with a lower quality\n    // }\n\n    var data = {};\n\n    data.latitude = latSign * (encLat * 108 + 53) / 10000000;\n    data.longitude = lonSign * (encLon * 215 + 107) / 10000000;\n\n    // build gateway data\n    data.num_gateways = gateways.length;\n\n    data.min_distance = 1e6;\n    data.max_distance = 0;\n    data.min_rssi = 200;\n    data.max_rssi = -200;\n    data.min_snr = 200;\n    data.max_snr = -200;\n    var gateway_num = 0;\n    var gw_id = \"\";\n    var gw_colors = [\"yellow\", \"lime\", \"red\", \"teal\", \"navy\", \"fuchsia\", \"green\", \"purple\", \"darkblue\", \"orange\"];\n\n    gateways.forEach(function (gateway) {\n        node.log(\"dr\" + gateway.dr);\n        gw_id = gateway.gatewayId;\n        if (gateway.rssi < data.min_rssi) data.min_rssi = gateway.rssi;\n        if (gateway.rssi > data.max_rssi) data.max_rssi = gateway.rssi;\n        if (gateway.snr < data.min_snr) data.min_snr = gateway.snr;\n        if (gateway.snr > data.max_snr) data.max_snr = gateway.snr;\n        if (gateway.location) {\n            var distance = parseInt(circleDistance(data, gateway.location));\n            if (distance < data.min_distance) data.min_distance = distance;\n            if (distance > data.max_distance) data.max_distance = distance;\n\n            // Push gateway location to the world map\n            new_payload.push({ payload: { name: gw_id, lat: gateway.location.latitude, lon: gateway.location.longitude, iconColor: gw_colors[gateway_num], label: gw_id, icon: \"cloud-upload\", Distance: (distance.toString() + \"m\") } });\n            // node.warn(\"Pushed \" + gw_id + \" numGW = \" + gateway_num + \" Color \" + gw_colors[gateway_num]);\n            messages[gateway_num + 1] = new_payload;\n            new_payload = [];\n            gateway_num++;\n        }\n\n    });\n\n    // Push tester location to the world map\n    if ((data.latitude < 0.00001) && (data.longitude < 0.0001)) {\n        // No tester location\n        new_payload.push({ payload: { name: \"Tester-\" + msg.payload.deviceInfo.devEui, lat: data.latitude, lon: data.longitude, iconColor: \"blue\", label: \"Tester-\" + msg.payload.deviceInfo.devEui, icon: \"rss\", Gateways: data.num_gateways, Min_RSSI: data.min_rssi, Max_RSSI: data.max_rssi, Min_SNR: data.min_snr, Max_SNR: data.max_snr, deleted: true } });\n        // node.warn(\"No tester location from \" + msg.payload.deviceInfo.devEui);\n    } else {\n        new_payload.push({ payload: { name: \"Tester-\" + msg.payload.deviceInfo.devEui, lat: data.latitude, lon: data.longitude, iconColor: \"blue\", label: \"Tester-\" + msg.payload.deviceInfo.devEui, icon: \"rss\", Gateways: data.num_gateways, Min_RSSI: data.min_rssi, Max_RSSI: data.max_rssi, Min_SNR: data.min_snr, Max_SNR: data.max_snr } });\n        // node.warn(\"Has tester location from \" + msg.payload.deviceInfo.devEui);\n    }\n    messages[0] = new_payload;\n    new_payload = [];\n\n    return messages;\n}\n\nfunction parser_cs34(msg) {\n\n    // avoid sending downlink ACK to integration\n    var port = msg.payload.fPort;\n    if ((port != 1) && (port != 11)) {\n        // node.warn(\"Wrong fPort \" + port);\n        return null;\n    }\n    // get raw input\n    var bytes = Buffer.from(msg.payload.data, 'base64');\n    var sequence_id = msg.payload.fCnt;\n    var gateways = msg.payload.rxInfo;\n\n    // get response\n    var new_messages;\n    if ((bytes[6] == 86) && (bytes[7] == 50)) {\n        new_messages = ftdProcess_V2(bytes, port, sequence_id, gateways);\n        // node.warn(\"Got V2 message from \" + msg.payload.deviceInfo.devEui);\n    } else {\n        new_messages = ftdProcess(bytes, port, sequence_id, gateways);\n        // node.warn(\"Got V1 message from \" + msg.payload.deviceInfo.devEui);\n    }\n    if (!new_messages) {\n        node.warn(\"ftdProcess returned no data\");\n        return null;\n    }\n\n    return new_messages;\n\n}\n\nmsg = parser_cs34(msg);\n\n\nreturn msg;",
+        "outputs": 11,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 620,
+        "wires": [
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ],
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ],
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ],
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ],
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ],
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ],
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ],
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ],
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ],
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ],
+            [
+                "9784ddebdddcb973",
+                "4ad84d71f3159f36",
+                "56bb6f1e1d464844"
+            ]
+        ],
+        "inputLabels": [
+            "MQTT in"
+        ],
+        "outputLabels": [
+            "Tester out",
+            "GW 1 out",
+            "GW 2 out",
+            "GW 3 out",
+            "GW 4 out",
+            "GW 5 out",
+            "GW 6 out",
+            "GW 7 out",
+            "GW 8 out",
+            "GW 9 out",
+            "GW 10 out"
+        ]
+    },
+    {
+        "id": "9784ddebdddcb973",
+        "type": "worldmap",
+        "z": "30a996ec05d123bd",
+        "name": "Coverage on map",
+        "lat": "14.4214289",
+        "lon": "121.007063",
+        "zoom": "18",
+        "layer": "OSMC",
+        "cluster": "",
+        "maxage": "",
+        "usermenu": "show",
+        "layers": "show",
+        "panit": "false",
+        "panlock": "false",
+        "zoomlock": "false",
+        "hiderightclick": "false",
+        "coords": "none",
+        "showgrid": "false",
+        "showruler": "true",
+        "allowFileDrop": "false",
+        "path": "/worldmap-2",
+        "overlist": "DR,BU,RW,TL",
+        "maplist": "OSMG,OSMC,EsriC,EsriS,UKOS",
+        "mapname": "",
+        "mapurl": "",
+        "mapopt": "",
+        "mapwms": false,
+        "x": 1290,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "4ad84d71f3159f36",
+        "type": "debug",
+        "z": "30a996ec05d123bd",
+        "name": "Coverage Out",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1280,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "43cffc6bec47e506",
+        "type": "inject",
+        "z": "30a996ec05d123bd",
+        "name": "Set Global context",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 170,
+        "y": 40,
+        "wires": [
+            [
+                "f1b891994fcaafbb"
+            ]
+        ]
+    },
+    {
+        "id": "f1b891994fcaafbb",
+        "type": "function",
+        "z": "30a996ec05d123bd",
+        "name": "Set Global GW ID's",
+        "func": "global.set('gw_ids', [\"ac1f09fffe064820\", \"ac1f09fffe0920ca\", \"60c5a8fffe766232\", \"ac1f09fffe0921ee\", \"unknown\", \"unknown\", \"unknown\", \"unknown\", \"unknown\", \"unknown\"]);\nglobal.set('field_number', [\"00\", \"01\", \"02\", \"03\", \"04\", \"05\", \"06\", \"07\", \"08\", \"09\"]);\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5246695a97092965",
+        "type": "mqtt in",
+        "z": "30a996ec05d123bd",
+        "name": "CS uplink",
+        "topic": "application/aae4436b-1fdf-4196-b8e7-32200a599915/#",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "73df369e44600a55",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 680,
+        "wires": [
+            [
+                "d80b01624797fcaa"
+            ]
+        ]
+    },
+    {
+        "id": "56bb6f1e1d464844",
+        "type": "worldmap-tracks",
+        "z": "30a996ec05d123bd",
+        "name": "Track movements",
+        "depth": 20,
+        "layer": "combined",
+        "smooth": false,
+        "x": 1050,
+        "y": 520,
+        "wires": [
+            [
+                "9784ddebdddcb973"
+            ]
+        ]
+    },
+    {
+        "id": "73df369e44600a55",
+        "type": "mqtt-broker",
+        "name": "Chirpstack",
+        "broker": "45.159.220.139",
+        "port": "1883",
+        "clientid": "contabo2",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

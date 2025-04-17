@@ -951,6 +951,7 @@ int product_info_handler(SERIAL_PORT port, char *cmd, stParam *param)
 	}
 	return AT_ERROR;
 }
+
 /**
  * @brief Get setting from flash
  *

@@ -1,0 +1,36 @@
++EVT:RX_1:-47:8:UNICAST:10:76312e312e3000
++EVT:RX_1:-47:8:UNICAST:3:00009a010420010d064820
+
+                           76312e312e3000
+                          0000a3010420020d0920ca
+Send downlink message to ac1f09fffe1939fd: {"devEui": "ac1f09fffe1939fd", "confirmed": false, "fPort": 10, "data": "djEuMS4wAA=="}
+Send downlink message to ac1f09fffe1939fd: {"devEui": "ac1f09fffe1939fd", "confirmed": false, "fPort": 3, "data": "AACjAQQgAg0JIMo="}
+
+fPort = 10 ==> 76312e312e3000
+7631	PLR
+2e		RSSI Max
+31		Distance Min
+2e		Distance Max
+30		>> 4 Num Gateways 00110000
+30		& 0x0f + 00 Seq ID
+
+Field tester uplink RSSI & SNR =>  RSSI:-49, SNR:13.3
+Field tester uplink RSSI & SNR =>  RSSI:-37, SNR:14.2
+SlideWindow => [50]
+Current PLR => 0.0%
+Most Near Gateway Disatance: 48 meter
+Most Far Gateway Disatance: 1082 meter
+
+fPort = 3 ==> 00009a010420010d064820
+00009a010420010d0
+64820 >> Gateway ID
+
+device ac1f09fffe1939fd GPS information => Lat:14.4214505, Long:121.0069342
+Field tester uplink RSSI & SNR =>  RSSI:-51, SNR:12.5
+Field tester uplink RSSI & SNR =>  RSSI:-36, SNR:14.2
+SlideWindow => [47, 48, 49]
+Current PLR => 0.0%
+Most Near Gateway Disatance: 49 meter
+Most Far Gateway Disatance: 1082 meter
+Send downlink message to ac1f09fffe1939fd: {"devEui": "ac1f09fffe1939fd", "confirmed": false, "fPort": 3, "data": "AACkAQQgAg4JIMo="}
+

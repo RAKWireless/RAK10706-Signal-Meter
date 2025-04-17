@@ -463,7 +463,7 @@ void handle_button(void)
 	{
 		pressCount = 0;
 		pressTime = 0;
-		// MYLOG("BTN", "Fice Clicks");
+		// MYLOG("BTN", "Five Clicks");
 		if (g_settings_ui)
 		{
 			switch (sel_menu)
@@ -499,6 +499,16 @@ void handle_button(void)
 				break;
 			}
 			MYLOG("BTN", "5x Menu Level %d", sel_menu);
+		}
+		else
+		{
+			// If available, enable BLE advertising for 30 seconds and open the BLE UART channel
+#if defined(_VARIANT_RAK3172_) || defined(_VARIANT_RAK3172_SIP_)
+// No BLE
+#else
+			Serial6.begin(115200, RAK_AT_MODE);
+			api.ble.advertise.start(30);
+#endif
 		}
 		break;
 	}
